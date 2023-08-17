@@ -1,12 +1,9 @@
 version: "2"
 
-sphinx:
-  configuration: conf.py
-  build:
-    image: latest
-    environment:
-      SPHINX_APIDOC_OPTIONS: members
-  python:
-    version: 3.8
-  requirements_file: requirements.txt
-  use_system_packages: false
+build:
+  tools:
+    python: "3.8"
+
+python:
+  install:
+    - requirements: docs/requirements.txt
