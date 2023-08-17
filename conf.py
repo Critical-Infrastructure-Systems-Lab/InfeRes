@@ -22,6 +22,9 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 pygments_style = 'sphinx'
 highlight_language = 'csharp'
 
+# If true, 'todo' and 'todoList' produce
+todo_include_todos = False
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
