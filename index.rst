@@ -22,7 +22,7 @@ The modules/functions used in the package are described in detail in the followi
    :hidden:
    :caption: docs
 
-   DataDownload
-   DataProcessing
+   docs/DataDownload
+   docs/DataProcessing
 
 
