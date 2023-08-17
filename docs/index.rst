@@ -20,9 +20,9 @@ The modules/functions used in the package are described in detail in the followi
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Guidelines
+   :caption: docs
 
-   Guidelines/DataDownload
-   Guidelines/DataProcessing
+   DataDownload
+   DataProcessing
 
 
