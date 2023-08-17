@@ -19,7 +19,6 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments
-
 pygments_style = 'sphinx'
 highlight_language = 'csharp'
 
