@@ -60,7 +60,7 @@ html_theme_options = {
     "navigation_depth": 3,
     "show_prev_next": True,
     "icon_links": [
-        {"name": "Web", "url": "https://inferes-test.readthedocs.io/en/latest/index.html", "icon": "fas fa-home"},
+        {"name": "Web", "url": "https://inferes-test.readthedocs.io/en/latest/", "icon": "fas fa-home"},
         {
             "name": "GitHub",
             "url": "https://github.com/ssmahto/InfeRes_test",
