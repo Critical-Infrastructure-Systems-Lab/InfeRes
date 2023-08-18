@@ -125,4 +125,4 @@ The Reservoir Extraction Project script includes the following function:
 License and Credits
 --------------------
 
-This script is released under the [insert license name here]. Credits and acknowledgments go to [insert any external libraries, data sources, or contributors].
+This script is released under the MIT License Copyright (c) 2014-2023. Credits and acknowledgments go to the InfeRes Development Team.

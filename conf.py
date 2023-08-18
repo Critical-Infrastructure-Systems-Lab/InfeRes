@@ -46,21 +46,17 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 pygments_style = 'sphinx'
 highlight_language = 'csharp'
 
-
-# Suppress certain warnings
-suppress_warnings = ['autosectionlabel.*']
-
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "pydata_sphinx_theme"
+html_static_path = ['_static']
 html_theme_options = {
     "collapse_navigation": False,
     "navigation_depth": 3,
     "show_prev_next": True,
     "icon_links": [
-        {"name": "Web", "url": "https://inferes-test.readthedocs.io/en/latest/", "icon": "fas fa-home"},
+#        {"name": "Web", "url": "https://inferes-test.readthedocs.io/en/latest/", "icon": "fas fa-home"},
         {
             "name": "GitHub",
             "url": "https://github.com/ssmahto/InfeRes_test",
@@ -72,17 +68,18 @@ html_theme_options = {
     "secondary_sidebar_items": ["page-toc", "edit-this-page"],
     "header_links_before_dropdown": 7,
 }
-html_sidebars = {
-    "**": ["sidebar-nav-bs"],
-    "index": [],
-    "overview": [],
-    "whatsnew": [],
-    "contributing": [],
-    "code_of_conduct": [],
-    "style_guide": [],
-}
+#html_sidebars = {
+#    "**": ["sidebar-nav-bs"],
+#    "index": [],
+#    "overview": [],
+#    "whatsnew": [],
+#    "contributing": [],
+#    "code_of_conduct": [],
+#    "style_guide": [],
+#}
 
-html_static_path = ['_static']
+# Suppress certain warnings
+suppress_warnings = ['autosectionlabel.*']
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
