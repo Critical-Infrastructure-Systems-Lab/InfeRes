@@ -5,7 +5,6 @@
 
 import os
 import sys
-import sciris as sc
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -42,7 +41,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments
 pygments_style = 'sphinx'
-modindex_common_prefix = ["sciris."]
 highlight_language = 'csharp'
 
 

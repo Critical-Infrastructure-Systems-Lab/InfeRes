@@ -2,7 +2,7 @@ Welcome to InfeRes
 ===================
 
 .. image:: https://img.shields.io/pypi/l/sciris.svg
- :target: https://github.com/sciris/sciris/blob/main/LICENSE
+ :target: https://github.com/ssmahto/InfeRes_test/blob/main/LICENCE
 
 What is InfeRes?
 ----------------
