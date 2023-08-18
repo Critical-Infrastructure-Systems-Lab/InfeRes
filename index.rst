@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to documentation of InfeRes: A Python package for inferring reservoir water extent, level and storage volume
+InfeRes: A Python package for inferring reservoir water extent, level and storage volume
 =====================================================================================================================
 
 This page provides the documentation and guidelines for the **InfeRes** python package. This package has two main modules, 

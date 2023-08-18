@@ -3,25 +3,33 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import os
+import sys
+import sciris as sc
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'reservoir monitoring'
-copyright = '2023, Shanti Shwarup Mahto'
-author = 'Shanti Shwarup Mahto'
+project = 'InfeRes'
+copyright = '2023, Critical-Infrastructure-Systems-Lab'
+author = 'InfeRes Development Team'
 
 release = '0.1'
 version = '0.1.0'
 
 # -- General configuration
 
+# Add any Sphinx extension module names here
 extensions = [
-    'sphinx.ext.duration',
-    'sphinx.ext.doctest',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.intersphinx',
+    "sphinx.ext.autodoc",  # Core Sphinx library for auto html doc generation from docstrings
+    "sphinx.ext.autosummary",  # Create neat summary tables for modules/classes/methods etc -- causes warnings with Napoleon however
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.viewcode",  # Add a link to the Python source code for classes, functions etc.
+    "sphinx.ext.napoleon",
+    "sphinx.ext.autosectionlabel",
 ]
+# Use Google docstrings
+napoleon_google_docstring = True
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
@@ -34,12 +42,45 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments
 pygments_style = 'sphinx'
+modindex_common_prefix = ["sciris."]
 highlight_language = 'csharp'
+
+
+# Suppress certain warnings
+suppress_warnings = ['autosectionlabel.*']
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = "pydata_sphinx_theme"
+html_theme_options = {
+    "collapse_navigation": False,
+    "navigation_depth": 3,
+    "show_prev_next": True,
+    "icon_links": [
+        {"name": "Web", "url": "https://inferes-test.readthedocs.io/en/latest/index.html", "icon": "fas fa-home"},
+        {
+            "name": "GitHub",
+            "url": "https://github.com/ssmahto/InfeRes_test",
+            "icon": "fab fa-github-square",
+        },
+    ],
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "search-field"],
+    "search_bar_text": "Search",
+    "secondary_sidebar_items": ["page-toc", "edit-this-page"],
+    "header_links_before_dropdown": 7,
+}
+html_sidebars = {
+    "**": ["sidebar-nav-bs"],
+    "index": [],
+    "overview": [],
+    "whatsnew": [],
+    "contributing": [],
+    "code_of_conduct": [],
+    "style_guide": [],
+}
+
 html_static_path = ['_static']
 
 # -- Options for EPUB output
