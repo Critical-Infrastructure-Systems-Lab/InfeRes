@@ -17,4 +17,4 @@ and other popular python packages. ``InfeRes`` is developed with a novel algorit
 For more information, see the full `documentation <https://inferes-test.readthedocs.io/en/latest/>`_, or `GitHub <https://github.com/ssmahto/InfeRes_test>`_.
 
 
-Currently ``InfeRes`` is only tasted on Python 3.8.
+Currently ``InfeRes`` is only tested on Python 3.8.
