@@ -30,6 +30,9 @@ extensions = [
 # Use Google docstrings
 napoleon_google_docstring = True
 
+# Suppress certain warnings
+suppress_warnings = ['autosectionlabel.*']
+
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
     'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
