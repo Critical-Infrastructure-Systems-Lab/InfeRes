@@ -8,9 +8,8 @@
 
 # IMPORTING LIBRARY
 
-import os
-parent_directory = "H:/My Drive/NUSproject/ReservoirExtraction/"
-os.chdir(parent_directory)
+import os 
+os.chdir("H:/My Drive/NUSproject/ReservoirExtraction/")
 from codes.CURVE import curve
 from codes.MASK import mask
 from codes.WSA import wsa
@@ -20,15 +19,18 @@ from codes.CURVE_Tile import two_tile
 
 if __name__ == "__main__":
 
-    #====================================>> USER INPUT PARAMETERS  
+    #====================================>> USER INPUT PARAMETERS 
+    parent_directory = "H:/My Drive/NUSproject/ReservoirExtraction/Reservoirs/"
+    os.chdir(parent_directory)
+    res_name = "Xiaowan"                        # Name of the reservoir 
     # A point within the reservoir [longitude, latitude]
-    point = [100.373, 22.676]
+    point = [99.95, 24.745]
     # Upper-Left and Lower-right coordinates. Example coordinates [longitude, latitude]
-    boundary = [100.30, 23, 100.40, 22.54]
-    res_name = "Nuozhadu"                        # Name of the reservoir 
-    max_wl = 812 
-    dead_wl = 750
-    Number_of_tiles = 2                             
+    boundary = [99.20, 25.60, 100.25, 24.65]
+    max_wl = 1236 
+    dead_wl = 1162
+    yearOFcommission = 2010
+    Number_of_tiles = 1                             
     os.makedirs(res_name, exist_ok=True)                  
     os.chdir(parent_directory + res_name)
     # Create a new folder within the working directory to download the data
@@ -44,7 +46,7 @@ if __name__ == "__main__":
     res_directory = parent_directory + res_name
     os.chdir(res_directory)
     os.makedirs("LandsatData_Clip", exist_ok=True)
-    mask(res_name, max_wl, point, boundary, dem_file_path, res_directory)
+    mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res_directory)
     
     #====================================>> FUNCTION CALLING (3)
     # [3]. Calculating the water surface area

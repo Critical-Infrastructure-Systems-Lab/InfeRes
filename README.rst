@@ -2,7 +2,7 @@ Welcome to InfeRes: A Python package for inferring reservoir water extent, level
 ====================================================================================================
 
 .. image:: https://img.shields.io/pypi/l/sciris.svg
- :target: https://github.com/ssmahto/InfeRes_test/blob/main/LICENCE
+ :target: https://github.com/ssmahto/InfeRes_test/blob/main/LICENSE
 
 What is InfeRes?
 ----------------

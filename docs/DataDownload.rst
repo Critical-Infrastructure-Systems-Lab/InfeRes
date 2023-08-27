@@ -22,7 +22,7 @@ Before using the Landsat data downloading script, make sure you have the followi
    
    .. note::
       Unfortunatly, the GDAL package used in **InfeRes** did not work with python 3.9 and above.
-      Whereas, it is GDAL is comfortable with python version 3.8.
+      Whereas, GDAL it was comfortable with python version 3.8.
    
    Activate the python environment:: 
 

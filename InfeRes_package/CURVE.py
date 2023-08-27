@@ -6,6 +6,7 @@ import os
 import utm
 import numpy as np
 from osgeo import gdal, gdal_array
+import matplotlib.pyplot as plt
 
 
 # HELPER FUNCTION
@@ -67,6 +68,10 @@ def curve(res_name, max_wl, point_coordinates, boundary_coordinates, dem_file_pa
     dem_bin[np.where(dem_bin > curve_ext)] = 0
     dem_bin[np.where(dem_bin > 0)] = 1
     res_iso = pick(xp, yp, dem_bin)
+    output = gdal_array.SaveArray(res_iso.astype(gdal_array.numpy.float32), 
+                                  "res_iso.tif", format="GTiff", 
+                                  prototype = res_dem_file)
+    output = None
     
     # finding the lowest DEM value in the reservoir extent
     res_dem = gdal_array.LoadFile(res_dem_file)
@@ -95,6 +100,24 @@ def curve(res_name, max_wl, point_coordinates, boundary_coordinates, dem_file_pa
     with open("Curve.csv","w", newline='') as my_csv:
         csvWriter = csv.writer(my_csv)
         csvWriter.writerows(results)
+    
+# ==================== Plot the DEM-based Level-Storage curve
+    
+    data = results[1:, :]
+    data = np.array(data, dtype=np.float32)
+    # Extract column 2 and 3 from the array
+    column_1 = data[:, 0]
+    column_3 = data[:, 2]
+    # Create the scatter plot
+    plt.figure()
+    plt.scatter(column_1, column_3, s=5, c='red')
+    # Set labels and title
+    plt.xlabel('Level (m)')
+    plt.ylabel('Storage (mcm)')
+    plt.title('Level V/s Storage curve')
+
+    # Display the plot
+    plt.show()
 
 
 

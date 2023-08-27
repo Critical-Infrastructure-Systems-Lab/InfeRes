@@ -38,7 +38,23 @@ Functions
 The Reservoir Extraction Project script includes the following function:
 - ``curve(res_name, max_wl, point_coordinates, boundary_coordinates, dem_file_path)``: This function calculates the DEM-based Area-Elevation-Storage curve for the reservoir. It takes the reservoir name, maximum water level, point within the reservoir, boundary coordinates, and DEM file path as inputs.
 
-2. ``MASK.py``
+Successful execution of the above function will generate the subset of DEM clipped by the given bounding box. The relation among water level, water surface area, and volume storage can also be inferred.
+
+**Example: The following figures are produced for Xiaowan reservoir in the Mekong River Basin using CURVE.py**
+
+.. figure:: /InfeRes_package/images/XiaowanDEM.png
+   :align: center
+   :scale: 100%
+
+*Figure 1. Clipped DEM of Xiaowan reservoir* 
+
+.. figure:: /InfeRes_package/images/DEMbased_Level_Storage_Curve.png
+   :align: center
+   :scale: 120%
+
+*Figure 2. Water level(m) V/s Storage(mcm) relationship*
+
+1. ``MASK.py``
 ---------------------
 This section provides step-by-step instructions on effectively using the ``MASK.py`` script. The script processes Landsat images and generates masks and zoning maps for a given reservoir area using the GDAL library.
 
@@ -49,6 +65,7 @@ Usage
 2. Set the input parameters in the script as follows:
    - ``res_name``: Name of the reservoir.
    - ``max_wl``: Maximum water level of the reservoir.
+   - ``yearOFcommission``: Year of Commission of the reservoir
    - ``point_coordinates``: Coordinates of a point within the reservoir (longitude, latitude).
    - ``boundary_coordinates``: Upper-left and lower-right coordinates of the reservoir boundary (longitude, latitude).
    - ``dem_file_path``: Path to the DEM (Digital Elevation Model) file.
@@ -62,9 +79,37 @@ The Reservoir Masking and Zoning script includes the following helper functions:
 - ``pick(c, r, mask)``: Picks a region from an array based on the provided column and row indices.
 - ``expand(array, n)``: Expands the area of the water mask by a specified number of additional pixels.
 The main function is as follows:
-- ``mask(res_name, max_wl, point_coordinates, boundary_coordinates, dem_file_path, res_directory)``: This function creates masks and zoning maps for the reservoir based on Landsat data. It takes various input parameters.
+- ``mask(res_name, max_wl, yearOFcommission, point_coordinates, boundary_coordinates, dem_file_path, res_directory)``: This function creates masks and zoning maps for the reservoir based on Landsat data. It takes various input parameters.
 
-3. ``WSA.py``
+The successful execution of the above function will generate the following outputs (see example). These intermediate files are necessary to run the next module (``WSA.py``).
+
+**Example: The following figures are produced  for Xiaowan reservoir in the Mekong River Basin using MASK.py**
+
+.. figure:: /InfeRes_package/images/DemMASK.png
+   :align: center
+   :scale: 100%
+
+*Figure 3. DEM-based mask of Xiaowan reservoir* 
+
+.. figure:: /InfeRes_package/images/ExpandedMASK.png
+   :align: center
+   :scale: 100%
+
+*Figure 4. Landsat-based expanded mask of Xiaowan reservoir*
+
+.. figure:: /InfeRes_package/images/Count.png
+   :align: center
+   :scale: 100%
+
+*Figure 5. Frequency (number of Landsat images) of water pixel for Xiaowan reservoir*
+
+.. figure:: /InfeRes_package/images/ZoneMASK.png
+   :align: center
+   :scale: 100%
+
+*Figure 6. Zone map for Xiaowan reservoir*
+
+1. ``WSA.py``
 ---------------------
 This section provides step-by-step instructions on effectively using the ``WSA.py`` script to estimate water surface area using Landsat NDWI images.
 
