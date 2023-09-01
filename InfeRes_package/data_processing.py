@@ -1,7 +1,7 @@
 ############+++++++++++ PLEASE MAKE SURE OF THE FOLLOWING POINTS BEFORE RUNNING THE CODE +++++++++++############
 # [1]. Data are already downloaded (Satellite images and DEM)
 # [2]. DEM should be in the projected coordinate system (unit: meters)
-# [3]. Use the same coordinates that you have used in "first_script_data_download.py"
+# [3]. Use the same coordinates that you have used in "data_download.py"
 # [4]. All the python(scripts) files are inside ".../ReservoirExtraction/codes"
 # [5]. "Number_of_tiles" = Number of Landsat tiles to cover the entire reservoir. It is recommended to download the Landsat tile covering the maximum reservoir area 
 ############++++++++++++++++++++++++++++++++++++++++ END ++++++++++++++++++++++++++++++++++++++++#############

@@ -159,7 +159,7 @@ def wsa(res_name, res_directory):
                                 qual = 1
                 print("      Final area: "+str(round(fn_area,3))+" km2")
                 print("   ") 
-                results = np.append(results, [[str(filename[8]), str(filename[11]),filename[18:28],
+                results = np.append(results, [[str(filename[8]), str(filename[10:12]),filename[18:28],
                                                round(threshold,3), round(ratio[49],3), 
                                                int(N_10), int(s_index), int(qual), 
                                                round(bf_area,3), round(af_area,3), 

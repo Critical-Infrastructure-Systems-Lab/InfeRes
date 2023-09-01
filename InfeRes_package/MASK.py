@@ -105,7 +105,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     print("Estimating cloud fraction...")
     class_count = 0 
     cloud_threshold = 80
-    #L8band_quality_threshold= 22280     # See user guide for more information
+    #L8band_quality_threshold= 22280     # See supplemental folder (Landsat documentation) for more information
     #L7band_quality_threshold= 5896
     #L5band_quality_threshold= 5896
     os.chdir(res_directory + "/Outputs") 
