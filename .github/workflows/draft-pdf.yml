@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Open Journals PDF Generator
-        uses: openjournals/openjournals-draft-action@v.1.0            
+        uses: openjournals/openjournals-draft-action@v.1.0
         with:
           journal: joss
           # This should be the path to the paper within your repo.
