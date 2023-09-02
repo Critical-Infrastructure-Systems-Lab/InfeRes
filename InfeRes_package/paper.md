@@ -53,7 +53,7 @@ The second module (`data_processing.py`) includes four sub-modules that are desi
              
 # Example Use Case
 
-We showcase the application of `InfeRes` to two different dams: Xiaowan (containing one Landsat tile) and Nuozhadu (containing two tiles), built in the years 2010 and 2014 in the Upper Mekong River basin. Note that if a reservoir falls across multiple adjacent Landsat tiles (like Nuozhadu), the user should download the tile that contains the biggest portion of the reservoir, as illustrated in Figure 1. Since the likelihood of getting two images of the same date is less, we do not recommend to merge two tiles. Merging tiles of different acquisition dates is not meaningful, and it's also not advisable to compromise with fewer merged (same date) images. 
+We showcase the application of `InfeRes` to two different dams: Xiaowan (containing one Landsat tile) and Nuozhadu (containing two tiles), built in the years 2010 and 2014 in the Upper Mekong River basin. Note that if a reservoir falls across multiple adjacent Landsat tiles (like Nuozhadu), the user should download the tile that contains the biggest portion of the reservoir, as illustrated in Figure 1. Since the likelihood of getting two images of the same date is low, we do not recommend to merge two tiles. Merging tiles of different acquisition dates is not meaningful, and it's also not advisable to compromise with fewer merged (same date) images. 
 
  
 Figure 1. Illustration of the selection of Landsat tile for One-Tile (Xiaowan, Left), and Two-Tile (Nuozhadu, Right) reservoir.   
