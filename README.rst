@@ -14,7 +14,7 @@ It built on top of `GDAL <https://gdal.org/>`_, `Scikit-Learn <https://scikit-le
 and other popular python packages. ``InfeRes`` is developed with a novel algorithm which helps inferring reservoir characteristics even from the partially cloudy images.
 ``InfeRes`` can be applied to monitor water surface area in any reservoir or waterbody; whereas, storage-volume can be obtained for the reservoirs build only after 2000 (limitation of DEM acquisition).
 
-For more information, see the full `documentation <https://inferes-test.readthedocs.io/en/latest/>`_, or `GitHub <https://github.com/ssmahto/InfeRes_test>`_.
+For more information, see the full `documentation <https://inferes-test.readthedocs.io/en/latest/>`_, or `GitHub <https://github.com/Critical-Infrastructure-Systems-Lab/InfeRes>`_.
 
 
 Currently ``InfeRes`` is only tested on Python 3.8.
