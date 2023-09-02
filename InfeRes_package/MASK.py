@@ -67,6 +67,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     
     
     # [1] =============================  CLIP LANDSAT IMAGES BY THE UTM BOUNDING BOX 
+    print('============ [1] CLIP LANDSAT IMAGES BY THE UTM BOUNDING BOX ===============')
     print("Clipping Landsat images by the bounding box ...")
     clip_count = 0 
     os.chdir(res_directory + "/LandsatData")
@@ -102,6 +103,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
        
         
     # [2] =============================== DELETE >80% cloudy (over the reservoir) images
+    print('============ [2] DELETE >80% cloudy (over the reservoir) images ===============')
     print("Estimating cloud fraction...")
     class_count = 0 
     cloud_threshold = 80
@@ -182,6 +184,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     
     
     # [3] ===================================  NDWI CALCULATION (adding cloud mask)
+    print('============ [3] NDWI CALCULATION (adding cloud mask) ===============')
     print("Adding cloud mask to NDWI images...")
     count = 0 
     os.chdir(res_directory + "/LandsatData_Clip")
@@ -241,6 +244,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
       
     # [4] ==============================  CREATE DEM-BASED MAX WATER EXTENT MASK    
     # DEM is preprocessed to have the same cell size and alignment with Landsat images 
+    print('============ [4] CREATE DEM-BASED MAX WATER EXTENT MASK ===============')
     print("Creating DEM-based max water extent mask ...") 
     os.chdir(res_directory +  "/Outputs") 
     res_dem_file = res_name + "DEM.tif"
@@ -268,6 +272,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     
     
     # [5] ============================  CREATE LANDSAT-BASED MAX WATER EXTENT MASK
+    print('============ [5] CREATE LANDSAT-BASED MAX WATER EXTENT MASK ===============')
     print("Creating Landsat-based max water extent mask ...")
     os.chdir(res_directory +  "/Outputs") 
     res_dem_file = res_name + "DEM.tif"
@@ -292,7 +297,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
                 cloud_percentage = round(np.nansum(ndwi)/np.nansum(res_iso)*100,2)
                 print(str(cloud_percentage) + '% cloud')
                 if cloud_percentage < 20:
-                    print('Image qualified for creating Landsat-based MASK')
+                    print('-------------------------------------------------')
                     ndwi = gdal_array.LoadFile(filename).astype(np.float32)
                     water = ndwi
                     water[np.where(ndwi >= 0)] = 1
@@ -340,6 +345,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     
     
     # [6] ======================  CREATE EXPANDED MASK (by 3 pixels surrounding each of water pixels)
+    print('============ [6] CREATE EXPANDED MASK ===============')
     print("Creating expanded mask ...")
     os.chdir(res_directory +  "/Outputs")
     mask_1 = gdal_array.LoadFile("Landsat_Mask.tif").astype(np.float32)
@@ -366,6 +372,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     
     
     # [7] =================================  CREATE 50-ZONE MAP (FREQUENCE MAP)
+    print('============ [7] CREATE 50-ZONE MAP (FREQUENCE MAP) ===============')
     print("Creating 50-zone map (frequence map) ...")
     os.chdir(res_directory +  "/Outputs")
     count = gdal_array.LoadFile("Count.tif").astype(np.float32)

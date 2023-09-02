@@ -52,7 +52,7 @@ def get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordin
 
     slno = l8images_clip.toList(l8images_clip.size())
     count = 1
-    for i in range(num_images):  # range(num_images)
+    for i in range(2):  # range(num_images)
         print(count)
         selected_image = ee.Image(slno.get(i))
         
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     collection_id = "LANDSAT/LC08/C02/T1_TOA"      
     start_data = '2001-01-01'
     end_date = '2022-12-31'
-    #get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
+    get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
     print("Congratulations...all Landsat-8 files have successfully downloaded!")
     
     #====================================>> USER INPUT PARAMETERS (Landsat-7 Image Specifications)

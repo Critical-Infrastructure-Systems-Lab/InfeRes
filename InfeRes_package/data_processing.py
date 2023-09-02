@@ -24,12 +24,12 @@ if __name__ == "__main__":
     os.chdir(parent_directory)
     res_name = "Xiaowan"                        # Name of the reservoir 
     # A point within the reservoir [longitude, latitude]
-    point = [99.95, 24.745]
+    point = [100.420, 24.66]
     # Upper-Left and Lower-right coordinates. Example coordinates [longitude, latitude]
-    boundary = [99.20, 25.60, 100.25, 24.65]
-    max_wl = 1236 
-    dead_wl = 1162
-    yearOFcommission = 2010
+    boundary = [100.115, 24.79, 100.51, 24.61]
+    max_wl = 1020 
+    dead_wl = 980
+    yearOFcommission = 2000
     Number_of_tiles = 1                             
     os.makedirs(res_name, exist_ok=True)                  
     os.chdir(parent_directory + res_name)
