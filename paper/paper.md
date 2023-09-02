@@ -70,6 +70,12 @@ Operatively, we assigned a parent directory and ran the module `data_download.py
 `InfeRes` is developed on GitHub as an open-source package, and the authors welcome
 contributions and feature suggestions. We ensure the code's quality with an extensive suite of tests on multiple reservoirs. Note that the package is only tested on Python 3.8, because of its dependency on the GDAL package. The documentation is created with Sphinx and hosted on Read the Docs. 
 
+# Figures
+
+![Caption for example figure.\label{fig:example}](Figure 1.png)
+![Caption for example figure.\label{fig:example}](Figure 2.png)
+and referenced from text using \autoref{fig:example}.
+
 # Acknowledgments 
 
 This research ‘On the origin of droughts in Mainland Southeast Asia—implications for water and energy security’ is supported by Singapore’s Ministry of Education (MoE) under its Academic Research Fund Tier 2, Project ID: MOE-000379-00 / MOE-000379-01, Award Number: MOE-T2EP50122-0004” XX).
