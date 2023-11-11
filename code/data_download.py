@@ -24,7 +24,7 @@ def track_task_progress(task):
     print("Download Completed!")
     
 # Define a function to download the satellite data from Google Earth Engine
-def get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date):
+def get_landsat_images(dataFolder, Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date):
     # Import the Landsat 8 TOA image collection
     point = ee.Geometry.Point(point_coordinates)
     boundary = ee.Geometry.Rectangle(boundary_coordinates)
@@ -52,17 +52,22 @@ def get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordin
 
     slno = l8images_clip.toList(l8images_clip.size())
     count = 1
-    for i in range(2):  # range(num_images)
+    for i in range(num_images):  # range(num_images)
         print(count)
         selected_image = ee.Image(slno.get(i))
         
         #Change the bands as per Landsat collection [Example: B3 = Green, B5 = NIR is for Landsat8]   
         if Satellite=='L8':
             ndwi = selected_image.normalizedDifference(['B3', 'B5'])
-        if (Satellite=='L7' or Satellite=='L5'):
+            #Thermal = selected_image.select('B10')
+        if (Satellite=='L5'):
             ndwi = selected_image.normalizedDifference(['B2', 'B4'])
+            #Thermal = selected_image.select('B6')
+        if (Satellite=='L7'):
+            ndwi = selected_image.normalizedDifference(['B2', 'B4'])
+            #Thermal = selected_image.select('B6_VCID_1')            
             
-        BQA = selected_image.select('QA_PIXEL')
+        BQA = selected_image.select('QA_PIXEL')        
     
         # Get the date of acquisition
         acquisition_date = selected_image.date()
@@ -79,7 +84,7 @@ def get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordin
         # Define the export parameters for a cloud-optimized GeoTIFF
         export_params1 = {
             'image': ndwi,
-            'folder': 'LandsatData',  # Optional: Specify a folder in your Google Drive to save the exported image
+            'folder': dataFolder,  # Optional: Specify a folder in your Google Drive to save the exported image
             'scale': 30,              # Optional: Specify the scale/resolution of the exported image in meters
             'description': collection_id[8:12] + '_NDWI_' + date_string.getInfo(),
             'crs': projection['crs'],
@@ -98,7 +103,7 @@ def get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordin
         # Define the export parameters for a cloud-optimized GeoTIFF
         export_params2 = {
             'image': BQA,
-            'folder': 'LandsatData',      # Optional: Specify a folder in your Google Drive to save the exported image
+            'folder': dataFolder,      # Optional: Specify a folder in your Google Drive to save the exported image
             'scale': 30,                  # Optional: Spatial Resolution
             'description': collection_id[8:12] + '_BQA_' + date_string.getInfo(),
             'crs': projection['crs'],
@@ -118,64 +123,74 @@ def get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordin
 ###################################  End of Function Definition  #######################################
 
 
-
 if __name__ == "__main__":
     
     # Set to the current working directory
     parent_directory = "H:/My Drive/NUSproject/ReservoirExtraction/Reservoirs/"    
     os.chdir(parent_directory)
     # Name of the reservoir 
-    res_name = "Juzishan"                                                        
+    res_name = "NamOu2"                                                        
     os.makedirs(res_name, exist_ok=True)                  
     os.chdir(parent_directory + res_name)
     # Create a new folder within the working directory to download the data
-    os.makedirs("LandsatData", exist_ok=True)
+    dataFolder = res_name + '_LandsatData'
+    os.makedirs(dataFolder, exist_ok=True)
+    print(res_name)
     
     #====================================>> USER INPUT PARAMETERS (Landsat-8 Image Specifications)
-    row = 43
-    path = 131
+    row = 46
+    path = 129
     Satellite = 'L8'
     # A point within the reservoir [longitude, latitude]
-    point_coordinates = [100.420, 24.66]
+    point_coordinates = [102.4510, 20.3926]
     # Example coordinates [longitude, latitude]
-    boundary_coordinates = [100.115, 24.79, 100.51, 24.61]
+    boundary_coordinates = [102.435, 20.640, 102.688, 20.388]
     collection_id = "LANDSAT/LC08/C02/T1_TOA"      
-    start_data = '2001-01-01'
+    start_data = '2015-06-01'
     end_date = '2022-12-31'
-    get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
+    print("-----Landsat-8 data download start-----")
+    get_landsat_images(dataFolder, Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
     print("Congratulations...all Landsat-8 files have successfully downloaded!")
+    print(res_name)
     
     #====================================>> USER INPUT PARAMETERS (Landsat-7 Image Specifications)
     Satellite = 'L7'
     collection_id = "LANDSAT/LE07/C02/T1_TOA"      
-    start_data = '2005-01-01'
+    start_data = '2015-06-01'
     end_date = '2022-12-31'
-    get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
+    print(res_name)
+    print("-----Landsat-7 data download start-----")
+    get_landsat_images(dataFolder, Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
     print("Congratulations...all Landsat-7 files have successfully downloaded!")
+    print(res_name)
     
     #====================================>> USER INPUT PARAMETERS (Landsat-5 Image Specifications)
     Satellite = 'L5'
     collection_id = "LANDSAT/LT05/C02/T1_TOA"      
-    start_data = '2001-01-01'
+    start_data = '2015-06-01'
     end_date = '2022-12-31'
-    get_landsat_images(Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
+    print(res_name)
+    print("-----Landsat-5 data download start-----")
+    get_landsat_images(dataFolder, Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
     print("Congratulations...all Landsat-5 files have successfully downloaded!")
+    print(res_name)
 
 
 
 # ==== In case of emargency if you want to cancel the running tasks then execute the following
     
-# # Get a list of all tasks
+# Get a list of all tasks
 # all_tasks = ee.data.getTaskList()
 
 # # Filter out the active tasks
 # active_tasks = [task for task in all_tasks if task['state'] == 'RUNNING' or task['state'] == 'READY']
 
-# Loop through the list of active tasks and cancel each task
+# #Loop through the list of active tasks and cancel each task
 # for task in all_tasks:
 #     task_id = task['id']
 #     ee.data.cancelTask(task_id)
 #     print(f"Cancelled task: {task_id}")
+
 
 
 

@@ -38,19 +38,21 @@ def pick(c, r, mask): # (c_number, r_number, an array of 1 amd 0)
                 fill.add(south)
     return picked
 
-def curve(res_name, max_wl, point_coordinates, boundary_coordinates, dem_file_path): 
+def curve(res_name, max_wl, point, boundary, dem_file_path): 
     # =====================================================  INPUT PARAMETERS
-    bc = boundary_coordinates
-    pc = point_coordinates
+    bc = boundary
+    pc = point
     coords = bc + pc
     utm_coords = np.array([utm.from_latlon(coords[i + 1], coords[i]) for i in range(0, len(coords), 2)])
     # Bounding box of the reservoir [ulx, uly, lrx, lry]
     bbox = np.array([utm_coords[0,0], utm_coords[0,1], utm_coords[1,0], utm_coords[1,1]], dtype=np.float32) 
     res_point = np.array([utm_coords[2,0], utm_coords[2,1]], dtype=np.float32)
+    # 30m equivalent distance in degree
+    #dist30m= 0.01745329252  
     xp = round(abs(res_point[0]-bbox[0])/30)
     yp = round(abs(res_point[1]-bbox[1])/30)
     # Maximum reservoir water level                            
-    curve_ext = max_wl + 20 # to expand the curve  
+    curve_ext = max_wl + 10 # to expand the curve  
     
     # CREATING E-A-S RELATIONSHOP
     # clipping DEM by the bounding box
@@ -60,11 +62,15 @@ def curve(res_name, max_wl, point_coordinates, boundary_coordinates, dem_file_pa
     # Changing path to the desired reservoir
     os.chdir(os.getcwd() + "/Outputs")
     res_dem_file = res_name+"DEM.tif"
-    dem = gdal.Translate(res_dem_file, dem, projWin = bbox)
+    dem = gdal.Translate(res_dem_file, dem, projWin = bbox)   #bbox=bc
     dem = None 
     
     # isolating the reservoir
     dem_bin = gdal_array.LoadFile(res_dem_file)
+    #------------------ Visualization <Start>
+    plt.figure()
+    plt.imshow(dem_bin, cmap='jet')
+    plt.colorbar()
     dem_bin[np.where(dem_bin > curve_ext)] = 0
     dem_bin[np.where(dem_bin > 0)] = 1
     res_iso = pick(xp, yp, dem_bin)
@@ -114,10 +120,10 @@ def curve(res_name, max_wl, point_coordinates, boundary_coordinates, dem_file_pa
     # Set labels and title
     plt.xlabel('Level (m)')
     plt.ylabel('Storage (mcm)')
-    plt.title('Level V/s Storage curve')
-
-    # Display the plot
-    plt.show()
+    plt.title(res_name)
+    plt.savefig(res_name+'_storageVSelevation.png', dpi=600, bbox_inches='tight')
+    
+    return min_dem
 
 
 

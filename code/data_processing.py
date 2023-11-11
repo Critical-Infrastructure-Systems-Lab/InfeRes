@@ -24,22 +24,28 @@ if __name__ == "__main__":
     os.chdir(parent_directory)
     res_name = "Xiaowan"                        # Name of the reservoir 
     # A point within the reservoir [longitude, latitude]
-    point = [100.420, 24.66]
+    point = [99.95, 24.745]
     # Upper-Left and Lower-right coordinates. Example coordinates [longitude, latitude]
-    boundary = [100.115, 24.79, 100.51, 24.61]
-    max_wl = 1020 
-    dead_wl = 980
-    yearOFcommission = 2000
+    boundary = [99.20, 25.60, 100.25, 24.65] #[107.763, 14.672, 107.924, 14.392]
+    max_wl = 1236 
+    yearOFcommission = 2010
     Number_of_tiles = 1                             
     os.makedirs(res_name, exist_ok=True)                  
     os.chdir(parent_directory + res_name)
     # Create a new folder within the working directory to download the data
     os.makedirs("Outputs", exist_ok=True)
-    dem_file_path = "H:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m_PCS.tif"
+    dem_file_path = "H:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m.tif"
+    
+    # if boundary[2] < 102:
+    #    dem_file_path = "G:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m_PCS_47N.tif"
+    # if (boundary[2] >= 102 and boundary[2] <108):
+    #    dem_file_path = "G:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m_PCS_48N.tif" 
+    # if (boundary[2] >= 108):
+    #    dem_file_path = "G:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m_PCS_49N.tif"       
     
     #====================================>> FUNCTION CALLING (1)
     # [1]. DEM-based Area-Elevation-Storage curve
-    curve(res_name, max_wl, point, boundary, dem_file_path)
+    res_minElev = curve(res_name, max_wl, point, boundary, dem_file_path)
     
     #====================================>> FUNCTION CALLING (2)
     # [2]. Creating mask/intermediate files
@@ -60,7 +66,7 @@ if __name__ == "__main__":
         res_directory = parent_directory + res_name
         os.chdir(res_directory)
         print("One tile reservoir")
-        one_tile(res_name, max_wl, dead_wl, res_directory)
+        one_tile(res_name, max_wl, res_minElev, res_directory)
                
     # Calculation of water surface area for the complete reservoir (2 tiles) and corresponding reservoir restorage 
     if Number_of_tiles==2:
@@ -68,11 +74,9 @@ if __name__ == "__main__":
         os.chdir(res_directory)
         print("Two tiles reservoir")
         # Upper-Left and Lower-right coordinates of the complete reservoir
-        complete_res_boundary = [100.2, 23, 100.40, 22.54]
-        two_tile(res_name, max_wl, dead_wl, point, complete_res_boundary, dem_file_path, res_directory)
+        complete_res_boundary = [101.693, 20.007, 102.331, 19.240]
+        two_tile(res_name, max_wl, res_minElev, point, complete_res_boundary, dem_file_path, res_directory)
         
-    
-    
     
     
     

@@ -4,6 +4,7 @@ import csv
 import utm
 import numpy as np
 from osgeo import gdal, gdal_array
+from osgeo import osr
 import matplotlib.pyplot as plt
 #from sklearn.cluster import KMeans
 
@@ -61,25 +62,23 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     bbox = np.array([utm_coords[0,0], utm_coords[0,1], utm_coords[1,0], utm_coords[1,1]], dtype=np.float32) 
     res_point = np.array([utm_coords[2,0], utm_coords[2,1]], dtype=np.float32)
     xp = round(abs(res_point[0]-bbox[0])/30)
-    yp = round(abs(res_point[1]-bbox[1])/30)                              
-    
-    
-    
+    yp = round(abs(res_point[1]-bbox[1])/30)                                  
     
     # [1] =============================  CLIP LANDSAT IMAGES BY THE UTM BOUNDING BOX 
     print('============ [1] CLIP LANDSAT IMAGES BY THE UTM BOUNDING BOX ===============')
     print("Clipping Landsat images by the bounding box ...")
     clip_count = 0 
-    os.chdir(res_directory + "/LandsatData")
+    os.chdir(res_directory + "/" + res_name + "_LandsatData")
     directory = os.getcwd()
     for filename in os.listdir(directory):
         try:
             if 'BQA' in filename: year= int(filename[9:13])
             if 'NDWI' in filename: year= int(filename[10:14])
-            if (filename.startswith("L") and year>= yearOFcommission-2):                  
+            if (filename.startswith("L") and year>= yearOFcommission-1):                  
+
                 ls_img = gdal.Open(filename)
                 print(ls_img.GetDescription())
-                                
+                
                 output_folder = res_directory + "/LandsatData_Clip"
                 if 'BQA' in filename:
                     output_file = "Clipped_" + filename[:19] + '_' + res_name + filename[19:] # Output file name
@@ -87,8 +86,8 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
                     output_file = "Clipped_" + filename[:20] + '_' + res_name + filename[20:] # Output file name
                 
                 # Create the full path for the output file
-                output_path = os.path.join(output_folder, output_file)
-        
+                output_path = os.path.join(output_folder, output_file) 
+                
                 ls_img = gdal.Translate(output_path, ls_img, projWin=bbox)
                 ls_img = None
                 clip_count += 1
@@ -99,7 +98,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
         except:
             continue
        
-        
+    dem_proj=None   
        
         
     # [2] =============================== DELETE >80% cloudy (over the reservoir) images
@@ -146,7 +145,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
                 bqa[np.where(res_iso == 0)] = 0
                 cloud_percentage = round(np.sum(bqa)/np.sum(res_iso)*100,2)
                 print(filename + " has " + str(cloud_percentage) + "% cloud coverage")
-                if cloud_percentage > cloud_threshold-20:
+                if cloud_percentage > cloud_threshold-10:
                     print('File is removed')
                     os.remove(filename)
                     os.remove(water_index)
@@ -265,7 +264,8 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     plt.figure()
     plt.imshow(dem_mask, cmap='jet')
     plt.colorbar()
-    plt.title('DEM_Mask.tif')
+    plt.title('DEM_Mask')
+    plt.savefig(res_name+'_DEM_Mask.png', dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
     
     
@@ -283,10 +283,12 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     img_list = [["Landsat", "Type", "Date"]] 
     os.chdir(res_directory + "/LandsatData_Clip")
     directory = os.getcwd() 
-    filtered_files = [file for file in os.listdir(directory) if "NDWI" in file]      
+    filtered_filesL8 = [file for file in os.listdir(directory) if "Clipped_LC08_NDWI" in file]   
+    filtered_filesL5 = [file for file in os.listdir(directory) if "Clipped_LT05_NDWI" in file] 
+    filtered_files = filtered_filesL8 + filtered_filesL5 
     for filename in filtered_files:
         try:
-            if (filename.startswith("Clipped_LC08") or filename.startswith("Clipped_LT05")):
+            if (filename.startswith("Clipped_")):
                 print(filename)
                 ndwi = gdal_array.LoadFile(filename).astype(np.float32) 
                 ndwi[np.where(res_iso == 0)] = 0
@@ -320,7 +322,8 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     plt.figure()
     plt.imshow(count, cmap='jet')
     plt.colorbar()
-    plt.title('Count.tif')
+    plt.title('Count')
+    plt.savefig(res_name+'_Count.png', dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
     max_we = count
     max_we[np.where(count < 1)] = 0
@@ -334,7 +337,8 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     plt.figure()
     plt.imshow(ls_mask, cmap='jet')
     plt.colorbar()
-    plt.title('Landsat_Mask.tif')
+    plt.title('Landsat_Mask')
+    plt.savefig(res_name+'_Landsat_Mask.png', dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
     with open("Landsat_Mask.csv","w", newline='') as my_csv:
         csvWriter = csv.writer(my_csv)
@@ -365,7 +369,8 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     plt.figure()
     plt.imshow(exp_mask, cmap='jet')
     plt.colorbar()
-    plt.title('Expanded_Mask.tif')
+    plt.title('Expanded_Mask')
+    plt.savefig(res_name+'_Expanded_Mask.png', dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
     
     
@@ -387,7 +392,8 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     plt.figure()
     plt.imshow(zone, cmap='jet')
     plt.colorbar()
-    plt.title('Zone_Mask.tif')
+    plt.title('Zone_Mask')
+    plt.savefig(res_name+'_Zone_Mask.png', dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
     print("DONE!!")
                 

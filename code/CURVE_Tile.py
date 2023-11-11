@@ -78,7 +78,7 @@ def two_tile(res_name, max_wl, dead_wl, point_coordinates, complete_res_boundary
    xp = round(abs(res_point[0]-bbox[0])/30)
    yp = round(abs(res_point[1]-bbox[1])/30)
    # Maximum reservoir water level                            
-   curve_ext = max_wl + 20 # to expand the curve  
+   curve_ext = max_wl + 10 # to expand the curve  
    
    # CREATING E-A-S RELATIONSHOP
    # clipping DEM by the bounding box
