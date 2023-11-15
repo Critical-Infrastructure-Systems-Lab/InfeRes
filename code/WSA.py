@@ -11,8 +11,8 @@ def wsa(res_name, res_directory):
     # IMPROVE NDWI-BASED LANDSAT IMAGE CLASSIFICATION
     results = [["Landsat", "Type", "Date", "Threshold", "R_50", "N_10", "S_zone", 
                 "Quality", "Bf_area", "Af_area", "Fn_area"]]
-    drtr = res_directory +  "/Outputs"     
-    os.chdir(res_directory + "/LandsatData_Clip")
+    drtr = (res_directory +  "/Outputs")     
+    os.chdir(res_directory + "/Clip")
     #os.chdir('./Landsat_'+str(LS))
     directory = os.getcwd()
     filtered_files = [file for file in os.listdir(directory) if "NDWI" in file]

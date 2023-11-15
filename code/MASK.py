@@ -1,7 +1,6 @@
 # IMPORTING LIBRARY
 import os
 import csv
-import utm
 import numpy as np
 from osgeo import gdal, gdal_array
 from osgeo import osr
@@ -52,67 +51,44 @@ def expand(array, n): # (an array of 1 and 0, number of additional pixels)
     return expand
 
 
-def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res_directory):
-    # [0] =======================================  INPUT PARAMETERS
-    bc = boundary
-    pc = point
-    coords = bc + pc
-    utm_coords = np.array([utm.from_latlon(coords[i + 1], coords[i]) for i in range(0, len(coords), 2)])
-    # Bounding box of the reservoir [ulx, uly, lrx, lry]
-    bbox = np.array([utm_coords[0,0], utm_coords[0,1], utm_coords[1,0], utm_coords[1,1]], dtype=np.float32) 
-    res_point = np.array([utm_coords[2,0], utm_coords[2,1]], dtype=np.float32)
-    xp = round(abs(res_point[0]-bbox[0])/30)
-    yp = round(abs(res_point[1]-bbox[1])/30)                                  
+def mask(res_name, yearOFcommission, max_wl, point, boundary, res_directory):   
     
-    # [1] =============================  CLIP LANDSAT IMAGES BY THE UTM BOUNDING BOX 
-    print('============ [1] CLIP LANDSAT IMAGES BY THE UTM BOUNDING BOX ===============')
-    print("Clipping Landsat images by the bounding box ...")
-    clip_count = 0 
-    os.chdir(res_directory + "/" + res_name + "_LandsatData")
-    directory = os.getcwd()
-    for filename in os.listdir(directory):
-        try:
-            if 'BQA' in filename: year= int(filename[9:13])
-            if 'NDWI' in filename: year= int(filename[10:14])
-            if (filename.startswith("L") and year>= yearOFcommission-1):                  
-
-                ls_img = gdal.Open(filename)
-                print(ls_img.GetDescription())
-                
-                output_folder = res_directory + "/LandsatData_Clip"
-                if 'BQA' in filename:
-                    output_file = "Clipped_" + filename[:19] + '_' + res_name + filename[19:] # Output file name
-                if 'NDWI' in filename:
-                    output_file = "Clipped_" + filename[:20] + '_' + res_name + filename[20:] # Output file name
-                
-                # Create the full path for the output file
-                output_path = os.path.join(output_folder, output_file) 
-                
-                ls_img = gdal.Translate(output_path, ls_img, projWin=bbox)
-                ls_img = None
-                clip_count += 1
-                print(clip_count)
-                continue
-            else:
-                continue  
-        except:
-            continue
-       
-    dem_proj=None   
-       
+    # [1] =======================================  INPUT PARAMETERS
+    os.chdir(res_directory + "/Outputs")
+    res_dem_file = (res_name + "DEM_UTM_CLIP.tif")
+    dem_ds = gdal.Open(res_dem_file)   
+    geotransform = dem_ds.GetGeoTransform()
+    
+    # Calculate the bounding box coordinates
+    left = geotransform[0]
+    top = geotransform[3]
+    right = left + geotransform[1] * dem_ds.RasterXSize
+    bottom = top + geotransform[5] * dem_ds.RasterYSize    
+    
+    bbox = [left, top, right, bottom]
+    
+    # 30m nearly equal to 0.00027777778 decimal degree
+    xp = abs(round((point[0]-boundary[0])/0.00027777778))
+    yp = abs(round((point[1]-boundary[1])/0.00027777778))     
+    dem_ds = None                                      
+ 
+      
         
     # [2] =============================== DELETE >80% cloudy (over the reservoir) images
     print('============ [2] DELETE >80% cloudy (over the reservoir) images ===============')
     print("Estimating cloud fraction...")
     class_count = 0 
     cloud_threshold = 80
-    #L8band_quality_threshold= 22280     # See supplemental folder (Landsat documentation) for more information
+    #L8band_quality_threshold= 22280     
     #L7band_quality_threshold= 5896
     #L5band_quality_threshold= 5896
+    # See supplemental folder (Landsat documentation) for more information
     os.chdir(res_directory + "/Outputs") 
     res_iso = gdal_array.LoadFile('res_iso.tif').astype(np.float32)
-    os.chdir(res_directory + "/LandsatData_Clip")
+    os.chdir(res_directory + "/Clip")
     directory = os.getcwd()
+    tot_files = os.listdir(directory)
+    slno = 1
     for filename in os.listdir(directory):
         try:
             if filename.startswith("Clipped_LC08_BQA"):   
@@ -123,7 +99,10 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
                 bqa[np.where(bqa >= 22280)] = 1
                 bqa[np.where(res_iso == 0)] = 0
                 cloud_percentage = round(np.sum(bqa)/np.sum(res_iso)*100,2)
-                print(filename + " has " + str(cloud_percentage) + "% cloud coverage")
+                print(slno)
+                print(filename)
+                print(str(cloud_percentage) + "% cloud coverage")
+                slno += 1
                 if cloud_percentage > cloud_threshold:
                     print('File is removed')
                     os.remove(filename)
@@ -144,7 +123,10 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
                 bqa[np.where(bqa >= 5896)] = 1
                 bqa[np.where(res_iso == 0)] = 0
                 cloud_percentage = round(np.sum(bqa)/np.sum(res_iso)*100,2)
-                print(filename + " has " + str(cloud_percentage) + "% cloud coverage")
+                print(slno)
+                print(filename)
+                print(str(cloud_percentage) + "% cloud coverage")
+                slno += 1
                 if cloud_percentage > cloud_threshold-10:
                     print('File is removed')
                     os.remove(filename)
@@ -165,7 +147,10 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
                 bqa[np.where(bqa >= 5896)] = 1
                 bqa[np.where(res_iso == 0)] = 0
                 cloud_percentage = round(np.sum(bqa)/np.sum(res_iso)*100,2)
-                print(filename + " has " + str(cloud_percentage) + "% cloud coverage")
+                print(slno)
+                print(filename)
+                print(str(cloud_percentage) + "% cloud coverage")
+                slno += 1
                 if cloud_percentage > cloud_threshold:
                     print('File is removed')
                     os.remove(filename)
@@ -173,12 +158,12 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
                     class_count += 1
                     continue
                 else:
-                    continue
+                    continue                
         except:
             continue
-    print('Total files removed= ' + str(class_count))
-    print('Cloud filtering completed')
-    
+    print('Total number of files= ' + str(len(tot_files)))
+    print('Number of files removed= ' + str(class_count))
+    print('Cloud filtering completed')   
     
     
     
@@ -186,7 +171,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     print('============ [3] NDWI CALCULATION (adding cloud mask) ===============')
     print("Adding cloud mask to NDWI images...")
     count = 0 
-    os.chdir(res_directory + "/LandsatData_Clip")
+    os.chdir(res_directory + "/Clip")
     directory = os.getcwd()
     filtered_files = [file for file in os.listdir(directory) if "NDWI" in file]
     for filename in filtered_files:
@@ -246,13 +231,13 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     print('============ [4] CREATE DEM-BASED MAX WATER EXTENT MASK ===============')
     print("Creating DEM-based max water extent mask ...") 
     os.chdir(res_directory +  "/Outputs") 
-    res_dem_file = res_name + "DEM.tif"
+    res_dem_file = res_name + "DEM_UTM_CLIP.tif"
     dem_clip = gdal_array.LoadFile(res_dem_file).astype(np.float32)
     water_px = dem_clip
     water_px[np.where(dem_clip <= max_wl+10)] = 1
     water_px[np.where(dem_clip > max_wl+10)] = 0
     picked_wp = pick(xp, yp, water_px)
-    dem_mask = expand(picked_wp, 3)
+    dem_mask = expand(picked_wp, 2)
     #dm_sum = np.nansum(dem_mask)     
     output = gdal_array.SaveArray(dem_mask.astype(gdal_array.numpy.float32), 
                                   "DEM_Mask.tif", format="GTiff", 
@@ -275,13 +260,13 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     print('============ [5] CREATE LANDSAT-BASED MAX WATER EXTENT MASK ===============')
     print("Creating Landsat-based max water extent mask ...")
     os.chdir(res_directory +  "/Outputs") 
-    res_dem_file = res_name + "DEM.tif"
+    res_dem_file = res_name + "DEM_UTM_CLIP.tif"
     dem_clip = gdal_array.LoadFile(res_dem_file).astype(np.float32)
     res_iso = gdal_array.LoadFile('res_iso.tif').astype(np.float32)
     count = dem_clip - dem_clip
     img_used = 0
     img_list = [["Landsat", "Type", "Date"]] 
-    os.chdir(res_directory + "/LandsatData_Clip")
+    os.chdir(res_directory + "/Clip")
     directory = os.getcwd() 
     filtered_filesL8 = [file for file in os.listdir(directory) if "Clipped_LC08_NDWI" in file]   
     filtered_filesL5 = [file for file in os.listdir(directory) if "Clipped_LT05_NDWI" in file] 
@@ -348,7 +333,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     
     
     
-    # [6] ======================  CREATE EXPANDED MASK (by 3 pixels surrounding each of water pixels)
+    # [6] ======================  CREATE EXPANDED MASK (by 2 pixels surrounding each of water pixels)
     print('============ [6] CREATE EXPANDED MASK ===============')
     print("Creating expanded mask ...")
     os.chdir(res_directory +  "/Outputs")
@@ -358,7 +343,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     mask = sum_mask
     mask[np.where(sum_mask <= 1)] = 0
     mask[np.where(sum_mask > 1)] = 1
-    exp_mask = expand(mask, 3) 
+    exp_mask = expand(mask, 2) 
     output = gdal_array.SaveArray(exp_mask.astype(gdal_array.numpy.float32), 
                                   "Expanded_Mask.tif", 
                                   format="GTiff", prototype = res_dem_file)
@@ -372,7 +357,6 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res
     plt.title('Expanded_Mask')
     plt.savefig(res_name+'_Expanded_Mask.png', dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
-    
     
     
     

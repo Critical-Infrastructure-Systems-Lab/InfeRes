@@ -11,9 +11,10 @@
 import os 
 os.chdir("H:/My Drive/NUSproject/ReservoirExtraction/")
 from codes.CURVE import curve
+from codes.CURVE import res_iso
 from codes.MASK import mask
 from codes.WSA import wsa
-from codes.PREPROCESING import preprocesing
+from codes.PREPROCESING import preprocessing
 from codes.CURVE_Tile import one_tile
 from codes.CURVE_Tile import two_tile
 
@@ -23,50 +24,46 @@ if __name__ == "__main__":
     #====================================>> USER INPUT PARAMETERS 
     parent_directory = "H:/My Drive/NUSproject/ReservoirExtraction/Reservoirs/"
     os.chdir(parent_directory)
-    res_name = "Xiaowan"                        # Name of the reservoir 
+    res_name = "PleiKrong"                        # Name of the reservoir
+    res_directory = parent_directory + res_name
     # A point within the reservoir [longitude, latitude]
-    point = [99.95, 24.745]
+    point = [107.872, 14.422]
     # Upper-Left and Lower-right coordinates. Example coordinates [longitude, latitude]
-    boundary = [99.20, 25.60, 100.25, 24.65] #[107.763, 14.672, 107.924, 14.392]
-    max_wl = 1236 
-    yearOFcommission = 2010
+    boundary = [107.763, 14.672, 107.924, 14.392] #[107.763, 14.672, 107.924, 14.392]
+    max_wl = 575 
+    yearOFcommission = 2008
     Number_of_tiles = 1                             
     os.makedirs(res_name, exist_ok=True)                  
     os.chdir(parent_directory + res_name)
     # Create a new folder within the working directory to download the data
     os.makedirs("Outputs", exist_ok=True)
+    # Path to DEM (SouthEastAsia_DEM30m.tif), PCS: WGS1984
     dem_file_path = "H:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m.tif"
     
-    # if boundary[2] < 102:
-    #    dem_file_path = "G:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m_PCS_47N.tif"
-    # if (boundary[2] >= 102 and boundary[2] <108):
-    #    dem_file_path = "G:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m_PCS_48N.tif" 
-    # if (boundary[2] >= 108):
-    #    dem_file_path = "G:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m_PCS_49N.tif"       
-    
-    #====================================>> FUNCTION CALLING (1)
+    #====================================>> FUNCTION CALLING -1
     # [1]. Data pre-processing (reprojection and clipping)
-    res_minElev = preprocessing(res_name, max_wl, point, boundary, dem_file_path)
+    preprocessing(res_name, point, boundary, parent_directory, dem_file_path)
     
-    #====================================>> FUNCTION CALLING (1)
-    # [1]. DEM-based Area-Elevation-Storage curve
-    res_minElev = curve(res_name, max_wl, point, boundary, dem_file_path)
+    #====================================>> FUNCTION CALLING -2
+    # [2]. DEM-based reservoir isolation
+    res_iso(res_name, max_wl, point, boundary, res_directory)
     
-    #====================================>> FUNCTION CALLING (2)
-    # [2]. Creating mask/intermediate files
-    res_directory = parent_directory + res_name
-    os.chdir(res_directory)
-    os.makedirs("LandsatData_Clip", exist_ok=True)
-    mask(res_name, yearOFcommission, max_wl, point, boundary, dem_file_path, res_directory)
+    #====================================>> FUNCTION CALLING -3
+    # [3]. Creating mask/intermediate files
+    mask(res_name, yearOFcommission, max_wl, point, boundary, res_directory)
     
-    #====================================>> FUNCTION CALLING (3)
-    # [3]. Calculating the water surface area
+    #====================================>> FUNCTION CALLING -4
+    # [4]. DEM-Landsat-based updated Area-Elevation-Storage curve
+    res_minElev = curve(res_name, res_directory)
+     
+    #====================================>> FUNCTION CALLING -5
+    # [5]. Calculating the water surface area
     res_directory = parent_directory + res_name
     os.chdir(res_directory)
     wsa(res_name, res_directory)
     
-    #====================================>> FUNCTION CALLING (4)
-    # [4]. Calculating the reservoir restorage (1 tiles)
+    #====================================>> FUNCTION CALLING -6
+    # [6]. Calculating the reservoir restorage (1 tiles)
     if Number_of_tiles==1:
         res_directory = parent_directory + res_name
         os.chdir(res_directory)
