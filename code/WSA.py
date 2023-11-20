@@ -11,9 +11,8 @@ def wsa(res_name, res_directory):
     # IMPROVE NDWI-BASED LANDSAT IMAGE CLASSIFICATION
     results = [["Landsat", "Type", "Date", "Threshold", "R_50", "N_10", "S_zone", 
                 "Quality", "Bf_area", "Af_area", "Fn_area"]]
-    drtr = (res_directory +  "/Outputs")     
+    drtr = (res_directory + "/Outputs")     
     os.chdir(res_directory + "/Clip")
-    #os.chdir('./Landsat_'+str(LS))
     directory = os.getcwd()
     filtered_files = [file for file in os.listdir(directory) if "NDWI" in file]
     slno =0
@@ -174,7 +173,7 @@ def wsa(res_name, res_directory):
     # ==========================================EXPORT RESULTS AS A CSV FILE
     print("Exporting results as a csv file ...")
     os.chdir(res_directory +  "/Outputs")
-    with open("WSA.csv","w", newline='') as my_csv:
+    with open('WSA_' + res_name + '.csv',"w", newline='') as my_csv:
         csvWriter = csv.writer(my_csv)
         csvWriter.writerows(results)
     print("  ")

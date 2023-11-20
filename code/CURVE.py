@@ -41,63 +41,43 @@ def pick(c, r, mask): # (c_number, r_number, an array of 1 amd 0)
 def res_iso(res_name, max_wl, point, boundary, res_directory): 
     # =====================================================  INPUT PARAMETERS
     os.chdir(res_directory + "/Outputs")
-    res_dem_file = (res_name + "DEM_UTM_CLIP.tif")
-    dem_ds = gdal.Open(res_dem_file)   
-    geotransform = dem_ds.GetGeoTransform()
-    
-    # Calculate the bounding box coordinates
-    left = geotransform[0]
-    top = geotransform[3]
-    right = left + geotransform[1] * dem_ds.RasterXSize
-    bottom = top + geotransform[5] * dem_ds.RasterYSize    
-    
-    bbox = [left, top, right, bottom]
+    res_dem_file = (res_name + "_DEM_UTM_CLIP.tif")
     
     # 30m nearly equal to 0.00027777778 decimal degree
     xp = abs(round((point[0]-boundary[0])/0.00027777778))
     yp = abs(round((point[1]-boundary[1])/0.00027777778))     
-    dem_ds = None
                              
     # CREATING E-A-S RELATIONSHOP   
     # isolating the reservoir
-    dem_bin = gdal_array.LoadFile(res_dem_file)
-    dem_bin[dem_bin == 32767] = np.nan
-    #------------------ Visualization <Start>
-    plt.figure()
-    plt.imshow(dem_bin, cmap='jet')
-    plt.colorbar()
-    
+    dem_bin = gdal_array.LoadFile(res_dem_file).astype(np.float32)
+    dem_bin[dem_bin == 32767] = np.nan    
     dem_bin[np.where(dem_bin > max_wl+10)] = 0        #to expand the reservoir extent for accounting uncertainity in max_wl
     dem_bin[np.where(dem_bin > 0)] = 1
     res_iso = pick(xp, yp, dem_bin)
+    
+    #------------------ Visualization <Start>
     plt.figure()
     plt.imshow(res_iso, cmap='jet')
     plt.colorbar()
-    output = gdal_array.SaveArray(res_iso.astype(gdal_array.numpy.float32), 
+    #------------------ Visualization <End>
+    
+    gdal_array.SaveArray(res_iso.astype(gdal_array.numpy.float32), 
                                   "res_iso.tif", format="GTiff", 
-                                  prototype = res_dem_file)
-    output = None
-    
-    # finding the lowest DEM value in the reservoir extent
-    res_dem = gdal_array.LoadFile(res_dem_file)
-    res_dem[res_dem == 32767] = np.nan
-    res_dem[np.where(res_iso == 0)] = 9999           # 9999 is any arbitrary unrealistice value
-    min_dem = int(np.nanmin(res_dem))
-    
+                                  prototype = res_dem_file)   
 
 #============================================================== E-A relationship
 def curve(res_name, res_directory): 
     # caculating reservoir surface area and storage volume coresponding to each water level
     os.chdir(res_directory + "/Outputs")                    
-    res_dem_file = (res_name + "DEM_UTM_CLIP.tif")
-    res_dem = gdal_array.LoadFile(res_dem_file)
-    res_dem[res_dem == 32767] = np.nan
+    res_dem_file = (res_name + "_DEM_UTM_CLIP.tif")
+    res_dem = gdal_array.LoadFile(res_dem_file).astype(np.float32)
+    res_dem[res_dem == 32767] = np.nan    
+    
     exp_mask = gdal_array.LoadFile("Expanded_Mask.tif").astype(np.float32)
     res_dem[np.where(exp_mask == 0)] = np.nan
-    output = gdal_array.SaveArray(res_dem.astype(gdal_array.numpy.float32), 
+    gdal_array.SaveArray(res_dem.astype(gdal_array.numpy.float32), 
                                   "DEM_Landsat_res_iso.tif", 
                                   format="GTiff", prototype = res_dem_file)
-    output = None
     # plt.figure()
     # plt.imshow(res_dem, cmap='jet')
     # plt.colorbar()
@@ -121,7 +101,7 @@ def curve(res_name, res_directory):
                             axis=0)
     
     # saving output as a csv file
-    with open("Curve.csv","w", newline='') as my_csv:
+    with open('Curve_' + res_name + '.csv',"w", newline='') as my_csv:
         csvWriter = csv.writer(my_csv)
         csvWriter.writerows(results)
     

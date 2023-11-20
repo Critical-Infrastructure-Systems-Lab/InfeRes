@@ -24,15 +24,13 @@ if __name__ == "__main__":
     #====================================>> USER INPUT PARAMETERS 
     parent_directory = "H:/My Drive/NUSproject/ReservoirExtraction/Reservoirs/"
     os.chdir(parent_directory)
-    res_name = "PleiKrong"                        # Name of the reservoir
+    res_name = "Xayabouri_part2"                        # Name of the reservoir
     res_directory = parent_directory + res_name
     # A point within the reservoir [longitude, latitude]
-    point = [107.872, 14.422]
+    point = [101.813, 19.254]
     # Upper-Left and Lower-right coordinates. Example coordinates [longitude, latitude]
-    boundary = [107.763, 14.672, 107.924, 14.392] #[107.763, 14.672, 107.924, 14.392]
-    max_wl = 575 
-    yearOFcommission = 2008
-    Number_of_tiles = 1                             
+    boundary = [101.754, 19.534, 101.958, 19.240] #[107.763, 14.672, 107.924, 14.392]
+    max_wl = 285                            
     os.makedirs(res_name, exist_ok=True)                  
     os.chdir(parent_directory + res_name)
     # Create a new folder within the working directory to download the data
@@ -50,7 +48,7 @@ if __name__ == "__main__":
     
     #====================================>> FUNCTION CALLING -3
     # [3]. Creating mask/intermediate files
-    mask(res_name, yearOFcommission, max_wl, point, boundary, res_directory)
+    mask(res_name, max_wl, point, boundary, res_directory)
     
     #====================================>> FUNCTION CALLING -4
     # [4]. DEM-Landsat-based updated Area-Elevation-Storage curve
@@ -58,26 +56,14 @@ if __name__ == "__main__":
      
     #====================================>> FUNCTION CALLING -5
     # [5]. Calculating the water surface area
-    res_directory = parent_directory + res_name
     os.chdir(res_directory)
     wsa(res_name, res_directory)
     
     #====================================>> FUNCTION CALLING -6
     # [6]. Calculating the reservoir restorage (1 tiles)
-    if Number_of_tiles==1:
-        res_directory = parent_directory + res_name
-        os.chdir(res_directory)
-        print("One tile reservoir")
-        one_tile(res_name, max_wl, res_minElev, res_directory)
+    os.chdir(res_directory)
+    one_tile(res_name, max_wl, res_minElev, res_directory)
                
-    # Calculation of water surface area for the complete reservoir (2 tiles) and corresponding reservoir restorage 
-    if Number_of_tiles==2:
-        res_directory = parent_directory + res_name
-        os.chdir(res_directory)
-        print("Two tiles reservoir")
-        # Upper-Left and Lower-right coordinates of the complete reservoir
-        complete_res_boundary = [101.693, 20.007, 102.331, 19.240]
-        two_tile(res_name, max_wl, res_minElev, point, complete_res_boundary, dem_file_path, res_directory)
         
     
     

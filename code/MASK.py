@@ -51,27 +51,15 @@ def expand(array, n): # (an array of 1 and 0, number of additional pixels)
     return expand
 
 
-def mask(res_name, yearOFcommission, max_wl, point, boundary, res_directory):   
+def mask(res_name, max_wl, point, boundary, res_directory):   
     
     # [1] =======================================  INPUT PARAMETERS
     os.chdir(res_directory + "/Outputs")
-    res_dem_file = (res_name + "DEM_UTM_CLIP.tif")
-    dem_ds = gdal.Open(res_dem_file)   
-    geotransform = dem_ds.GetGeoTransform()
-    
-    # Calculate the bounding box coordinates
-    left = geotransform[0]
-    top = geotransform[3]
-    right = left + geotransform[1] * dem_ds.RasterXSize
-    bottom = top + geotransform[5] * dem_ds.RasterYSize    
-    
-    bbox = [left, top, right, bottom]
+    res_dem_file = (res_name + "_DEM_UTM_CLIP.tif")
     
     # 30m nearly equal to 0.00027777778 decimal degree
     xp = abs(round((point[0]-boundary[0])/0.00027777778))
-    yp = abs(round((point[1]-boundary[1])/0.00027777778))     
-    dem_ds = None                                      
- 
+    yp = abs(round((point[1]-boundary[1])/0.00027777778))                                          
       
         
     # [2] =============================== DELETE >80% cloudy (over the reservoir) images
@@ -231,7 +219,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, res_directory):
     print('============ [4] CREATE DEM-BASED MAX WATER EXTENT MASK ===============')
     print("Creating DEM-based max water extent mask ...") 
     os.chdir(res_directory +  "/Outputs") 
-    res_dem_file = res_name + "DEM_UTM_CLIP.tif"
+    res_dem_file = res_name + "_DEM_UTM_CLIP.tif"
     dem_clip = gdal_array.LoadFile(res_dem_file).astype(np.float32)
     water_px = dem_clip
     water_px[np.where(dem_clip <= max_wl+10)] = 1
@@ -260,7 +248,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, res_directory):
     print('============ [5] CREATE LANDSAT-BASED MAX WATER EXTENT MASK ===============')
     print("Creating Landsat-based max water extent mask ...")
     os.chdir(res_directory +  "/Outputs") 
-    res_dem_file = res_name + "DEM_UTM_CLIP.tif"
+    res_dem_file = res_name + "_DEM_UTM_CLIP.tif"
     dem_clip = gdal_array.LoadFile(res_dem_file).astype(np.float32)
     res_iso = gdal_array.LoadFile('res_iso.tif').astype(np.float32)
     count = dem_clip - dem_clip
@@ -325,7 +313,7 @@ def mask(res_name, yearOFcommission, max_wl, point, boundary, res_directory):
     plt.title('Landsat_Mask')
     plt.savefig(res_name+'_Landsat_Mask.png', dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
-    with open("Landsat_Mask.csv","w", newline='') as my_csv:
+    with open('Landsat_Mask_' + res_name + '.csv',"w", newline='') as my_csv:
         csvWriter = csv.writer(my_csv)
         csvWriter.writerows(img_list)
     print("Created Landsat-based max water extent mask from "+str(img_used)+" images")

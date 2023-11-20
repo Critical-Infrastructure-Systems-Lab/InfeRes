@@ -104,7 +104,7 @@ def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
     ndwi_subset = ndwi_ds.GetRasterBand(1).ReadAsArray(xoff, yoff, width, height)
        
     # Create the subset GeoTIFF for DEM
-    output_dem_path = os.path.join(res_name+"DEM_UTM_CLIP.tif")
+    output_dem_path = os.path.join(res_name+"_DEM_UTM_CLIP.tif")
     driver = gdal.GetDriverByName('GTiff')
     output_dem_ds = driver.Create(output_dem_path, width, height, 1, gdal.GDT_Float32)
     output_dem_ds.SetProjection(dem_ds.GetProjection())
@@ -113,7 +113,7 @@ def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
     output_dem_ds = None
     
     # Create the subset GeoTIFF for NDWI
-    output_ndwi_path = os.path.join(res_name+"NDWI_UTM_CLIP.tif")
+    output_ndwi_path = os.path.join(res_name+"_NDWI_UTM_CLIP.tif")
     output_ndwi_ds = driver.Create(output_ndwi_path, width, height, 1, gdal.GDT_Float32)
     output_ndwi_ds.SetProjection(ndwi_ds.GetProjection())
     output_ndwi_ds.SetGeoTransform((xmin, ndwi_transform[1], 0, ymax, 0, ndwi_transform[5]))
@@ -158,7 +158,7 @@ def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
     plt.savefig(res_name+'_DEM.png', dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
     
-    os.remove(res_name+"NDWI_UTM_CLIP.tif")
+    os.remove(res_name+"_NDWI_UTM_CLIP.tif")
     
 #================================= EXTRA (UTM to GCS)  ===================================        
     # # Input and output file paths
