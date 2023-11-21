@@ -1,6 +1,7 @@
 # IMPORTING LIBRARY
 import os
 import csv
+import utm
 import numpy as np
 from osgeo import gdal, gdal_array
 from osgeo import osr
@@ -57,10 +58,43 @@ def mask(res_name, max_wl, point, boundary, res_directory):
     os.chdir(res_directory + "/Outputs")
     res_dem_file = (res_name + "_DEM_UTM_CLIP.tif")
     
-    # 30m nearly equal to 0.00027777778 decimal degree
-    xp = abs(round((point[0]-boundary[0])/0.00027777778))
-    yp = abs(round((point[1]-boundary[1])/0.00027777778))                                          
-      
+    try: # Converting point and boundary coordinates from CGS to UTM ===========    
+        #30m nearly equal to "0.00027777778" decimal degree
+        xp = abs(round((point[0]-boundary[0])/0.00027777778))
+        yp = abs(round((point[1]-boundary[1])/0.00027777778)) 
+        
+        dem_bin = gdal_array.LoadFile(res_dem_file).astype(np.float32)
+        dem_bin[dem_bin == 32767] = np.nan    
+        dem_bin[np.where(dem_bin > max_wl+10)] = 0        #to expand the reservoir extent for accounting uncertainity in max_wl
+        dem_bin[np.where(dem_bin > 0)] = 1
+        res_iso = pick(xp, yp, dem_bin)
+        aa=sum(sum(res_iso))
+        
+        if aa == 0:    
+            dem_ds = gdal.Open(res_dem_file)   
+            geotransform = dem_ds.GetGeoTransform()   
+            # Calculate the bounding box coordinates
+            left = geotransform[0]
+            top = geotransform[3]
+            right = left + geotransform[1] * dem_ds.RasterXSize
+            bottom = top + geotransform[5] * dem_ds.RasterYSize 
+            # Bounding box of the reservoir [ulx, uly, lrx, lry]        
+            bbox = [left, top, right, bottom]
+            
+            utm_coords = np.array([utm.from_latlon(point[i + 1], point[i]) for i in range(0, len(point), 2)])
+            res_point = np.array([utm_coords[0,0], utm_coords[0,1]], dtype=np.float32)
+            xp = round(abs(res_point[0]-bbox[0])/30)
+            yp = round(abs(res_point[1]-bbox[1])/30)    
+            
+            dem_bin = gdal_array.LoadFile(res_dem_file).astype(np.float32)
+            dem_bin[dem_bin == 32767] = np.nan    
+            dem_bin[np.where(dem_bin > max_wl+10)] = 0        #to expand the reservoir extent for accounting uncertainity in max_wl
+            dem_bin[np.where(dem_bin > 0)] = 1
+            res_iso = pick(xp, yp, dem_bin)
+    
+    except Exception as e:
+          # Handle the exception or perform actions to handle the error gracefully
+          print(f"An error occurred: {str(e)}")
         
     # [2] =============================== DELETE >80% cloudy (over the reservoir) images
     print('============ [2] DELETE >80% cloudy (over the reservoir) images ===============')
@@ -225,7 +259,7 @@ def mask(res_name, max_wl, point, boundary, res_directory):
     water_px[np.where(dem_clip <= max_wl+10)] = 1
     water_px[np.where(dem_clip > max_wl+10)] = 0
     picked_wp = pick(xp, yp, water_px)
-    dem_mask = expand(picked_wp, 2)
+    dem_mask = expand(picked_wp, 1)
     #dm_sum = np.nansum(dem_mask)     
     output = gdal_array.SaveArray(dem_mask.astype(gdal_array.numpy.float32), 
                                   "DEM_Mask.tif", format="GTiff", 
@@ -313,6 +347,7 @@ def mask(res_name, max_wl, point, boundary, res_directory):
     plt.title('Landsat_Mask')
     plt.savefig(res_name+'_Landsat_Mask.png', dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
+    
     with open('Landsat_Mask_' + res_name + '.csv',"w", newline='') as my_csv:
         csvWriter = csv.writer(my_csv)
         csvWriter.writerows(img_list)
@@ -321,7 +356,7 @@ def mask(res_name, max_wl, point, boundary, res_directory):
     
     
     
-    # [6] ======================  CREATE EXPANDED MASK (by 2 pixels surrounding each of water pixels)
+    # [6] ======================  CREATE EXPANDED MASK (by 1 pixels surrounding each of water pixels)
     print('============ [6] CREATE EXPANDED MASK ===============')
     print("Creating expanded mask ...")
     os.chdir(res_directory +  "/Outputs")
@@ -331,7 +366,7 @@ def mask(res_name, max_wl, point, boundary, res_directory):
     mask = sum_mask
     mask[np.where(sum_mask <= 1)] = 0
     mask[np.where(sum_mask > 1)] = 1
-    exp_mask = expand(mask, 2) 
+    exp_mask = expand(mask, 1) 
     output = gdal_array.SaveArray(exp_mask.astype(gdal_array.numpy.float32), 
                                   "Expanded_Mask.tif", 
                                   format="GTiff", prototype = res_dem_file)

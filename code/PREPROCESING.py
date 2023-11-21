@@ -21,7 +21,7 @@ def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
     
     # Changing path to the desired reservoir
     os.chdir(os.getcwd() + "/Outputs")
-    res_dem_file = res_name+"DEM.tif"
+    res_dem_file = res_name+"_DEM_GCS.tif"
     dem = gdal.Translate(res_dem_file, dem, projWin = boundary)
     dem = None
     
@@ -41,7 +41,7 @@ def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
     # Input and output file paths
     ref_file = (data_folder_path + '/' + first_ndwi_file)
     target_file = res_dem_file
-    output_file = res_name+"DEM_UTM.tif"     
+    output_file = res_name+"_DEM_UTM.tif"     
          
     # Open the reference raster (ndwi.tif)
     ref_ds = gdal.Open(ref_file)
@@ -151,11 +151,12 @@ def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
     os.chdir(parent_directory + res_name + '/Outputs')
     #------------------ Visualization <Start>
     plt.figure()
-    dem = gdal_array.LoadFile(res_name+"DEM.tif").astype(np.float32)
+    dem = gdal_array.LoadFile(res_name+"_DEM_UTM_CLIP.tif").astype(np.float32)
+    dem[dem == 32767] = np.nan
     plt.imshow(dem, cmap='jet')
     plt.colorbar()
-    plt.title('DEM')
-    plt.savefig(res_name+'_DEM.png', dpi=600, bbox_inches='tight')
+    plt.title('Clipped DEM (UTM)')
+    plt.savefig(res_name+"_DEM.png", dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
     
     os.remove(res_name+"_NDWI_UTM_CLIP.tif")

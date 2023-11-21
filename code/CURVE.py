@@ -5,7 +5,7 @@ import csv
 import os
 import utm
 import numpy as np
-from osgeo import gdal, gdal_array
+from osgeo import gdal, gdal_array, osr
 import matplotlib.pyplot as plt
 
 
@@ -38,27 +38,59 @@ def pick(c, r, mask): # (c_number, r_number, an array of 1 amd 0)
                 fill.add(south)
     return picked
 
-def res_iso(res_name, max_wl, point, boundary, res_directory): 
+
+
+def res_isolation(res_name, max_wl, point, boundary, res_directory): 
     # =====================================================  INPUT PARAMETERS
     os.chdir(res_directory + "/Outputs")
     res_dem_file = (res_name + "_DEM_UTM_CLIP.tif")
     
-    # 30m nearly equal to 0.00027777778 decimal degree
-    xp = abs(round((point[0]-boundary[0])/0.00027777778))
-    yp = abs(round((point[1]-boundary[1])/0.00027777778))     
-                             
-    # CREATING E-A-S RELATIONSHOP   
-    # isolating the reservoir
-    dem_bin = gdal_array.LoadFile(res_dem_file).astype(np.float32)
-    dem_bin[dem_bin == 32767] = np.nan    
-    dem_bin[np.where(dem_bin > max_wl+10)] = 0        #to expand the reservoir extent for accounting uncertainity in max_wl
-    dem_bin[np.where(dem_bin > 0)] = 1
-    res_iso = pick(xp, yp, dem_bin)
+    try: # Converting point and boundary coordinates from CGS to UTM ===========    
+        #30m nearly equal to 0.00027777778 decimal degree
+        xp = abs(round((point[0]-boundary[0])/0.00027777778))
+        yp = abs(round((point[1]-boundary[1])/0.00027777778)) 
+        
+        dem_bin = gdal_array.LoadFile(res_dem_file).astype(np.float32)
+        dem_bin[dem_bin == 32767] = np.nan    
+        dem_bin[np.where(dem_bin > max_wl+10)] = 0        #to expand the reservoir extent for accounting uncertainity in max_wl
+        dem_bin[np.where(dem_bin > 0)] = 1
+        res_iso = pick(xp, yp, dem_bin)
+        aa=sum(sum(res_iso))
+        
+        if aa == 0:    
+            dem_ds = gdal.Open(res_dem_file)   
+            geotransform = dem_ds.GetGeoTransform()   
+            # Calculate the bounding box coordinates
+            left = geotransform[0]
+            top = geotransform[3]
+            right = left + geotransform[1] * dem_ds.RasterXSize
+            bottom = top + geotransform[5] * dem_ds.RasterYSize 
+            # Bounding box of the reservoir [ulx, uly, lrx, lry]        
+            bbox = [left, top, right, bottom]
+            
+            utm_coords = np.array([utm.from_latlon(point[i + 1], point[i]) for i in range(0, len(point), 2)])
+            res_point = np.array([utm_coords[0,0], utm_coords[0,1]], dtype=np.float32)
+            xp = round(abs(res_point[0]-bbox[0])/30)
+            yp = round(abs(res_point[1]-bbox[1])/30)    
+            
+            dem_bin = gdal_array.LoadFile(res_dem_file).astype(np.float32)
+            dem_bin[dem_bin == 32767] = np.nan    
+            dem_bin[np.where(dem_bin > max_wl+10)] = 0        #to expand the reservoir extent for accounting uncertainity in max_wl
+            dem_bin[np.where(dem_bin > 0)] = 1
+            res_iso = pick(xp, yp, dem_bin)
+    
+    except Exception as e:
+          # Handle the exception or perform actions to handle the error gracefully
+          print(f"An error occurred: {str(e)}")
     
     #------------------ Visualization <Start>
     plt.figure()
-    plt.imshow(res_iso, cmap='jet')
-    plt.colorbar()
+    plt.imshow(res_iso, cmap='viridis')
+    plt.scatter([xp], [yp], c='r', s=10)
+    plt.imshow(dem_bin, cmap='viridis')
+    plt.scatter([xp], [yp], c='r', s=20)
+    plt.title('DEM-based reservoir isolation')
+    plt.savefig(res_name+"_DEM_res_iso.png", dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
     
     gdal_array.SaveArray(res_iso.astype(gdal_array.numpy.float32), 
@@ -81,8 +113,9 @@ def curve(res_name, res_directory):
     # plt.figure()
     # plt.imshow(res_dem, cmap='jet')
     # plt.colorbar()
+    # 
     min_dem = int(np.nanmin(res_dem))
-    curve_ext = int(np.nanmax(res_dem)) + 10              # to expand the curve
+    curve_ext = int(np.nanmax(res_dem))            
     res_dem_updated = ("DEM_Landsat_res_iso.tif")
         
     results = [["Level (m)", "Area (skm)", "Storage (mcm)"]]
