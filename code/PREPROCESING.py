@@ -13,7 +13,7 @@ from osgeo import gdal, gdal_array
 import matplotlib.pyplot as plt
 import numpy as np
 
-def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
+def preprocessing(res_name, boundary, parent_directory, dem_file_path):
     
     # clipping DEM by the bounding box
     print("Clipping DEM by the bounding box ...") 
@@ -25,13 +25,12 @@ def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
     dem = gdal.Translate(res_dem_file, dem, projWin = boundary)
     dem = None
     
-    #------------------ Visualization <Start>
     #image = gdal_array.LoadFile(res_dem_file)
     #plt.figure()
     #plt.imshow(image, cmap='jet')
     #plt.colorbar()
     
-#============================================================ GCS to UTM 
+# STEP1 ================================================== GCS to UTM 
     data_folder_path= (parent_directory + res_name + '/' + res_name + '_LandsatData')
     # List all files in the folder
     all_files = os.listdir(data_folder_path)   
@@ -67,7 +66,7 @@ def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
     output_ds = None
     ref_ds = None
     
-#============================= Clipping with maximum overlapping area between DEM and LANDSAT-image   
+# STEP2 =========================== Clipping with maximum overlapping area between DEM and LANDSAT-image   
     # Input raster files
     dem_path = output_file 
     ndwi_path = ref_file
@@ -120,7 +119,7 @@ def preprocessing(res_name, point, boundary, parent_directory, dem_file_path):
     output_ndwi_ds.GetRasterBand(1).WriteArray(ndwi_subset)
     output_ndwi_ds = None
     
-#======================= Clipping all Landsat Images and saving in a new folder (Clip)  
+# STEP3 ======================= Clipping all Landsat Images and saving in a new folder (folder name is "Clip")  
         
     os.chdir(parent_directory + res_name + '/' + res_name + '_LandsatData')
     data_directory = os.getcwd()

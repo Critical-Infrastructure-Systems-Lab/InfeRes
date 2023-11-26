@@ -9,14 +9,14 @@
 
 import csv
 import os 
-os.chdir("H:/My Drive/NUSproject/ReservoirExtraction/")
+os.chdir("G:/My Drive/NUSproject/ReservoirExtraction/")
 import pandas as pd
 import numpy as np
 
 if __name__ == "__main__":
 
     #====================================>> USER INPUT PARAMETERS 
-    parent_directory = "H:/My Drive/NUSproject/ReservoirExtraction/Reservoirs/"
+    parent_directory = "G:/My Drive/NUSproject/ReservoirExtraction/Reservoirs/"
     os.chdir(parent_directory)
     multi_tile_res = 'Xayabouri'
     max_wl = 285
@@ -36,7 +36,6 @@ if __name__ == "__main__":
         n += 1    
     filename = None
     
-    curve_data = [["Level (m)", "Area (skm)", "Storage (mcm)"]]
     min_val= int(min(data_range.iloc[:, 0]))
     max_val= int(max(data_range.iloc[:, 1]))
     data = pd.DataFrame({'RefElev': range(min_val, max_val+1)})
@@ -97,7 +96,6 @@ if __name__ == "__main__":
           csvWriter = csv.writer(my_csv)
           csvWriter.writerows(curve_data_new_list)
         
-    del data, Lev, Ar, Vol, curve_data, curve_data_new
     
     #========== ESTIMATING TOTAL RESERVOIR AREA USING PREVIOUSLY GENERATED CURVE FOR THE BIGGER TILE
     
