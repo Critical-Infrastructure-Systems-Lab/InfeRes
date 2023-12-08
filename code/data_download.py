@@ -129,7 +129,7 @@ if __name__ == "__main__":
     parent_directory = "G:/My Drive/NUSproject/ReservoirExtraction/Reservoirs/"    
     os.chdir(parent_directory)
     # Name of the reservoir 
-    res_name = "Chulabhorn"                                                        
+    res_name = "Bhumibol"                                                        
     os.makedirs(res_name, exist_ok=True)                  
     os.chdir(parent_directory + res_name)
     # Create a new folder within the working directory to download the data
@@ -139,15 +139,15 @@ if __name__ == "__main__":
     
     #====================================>> USER INPUT PARAMETERS (Landsat-8 Image Specifications)
     row = 48
-    path = 129
+    path = 131
     Satellite = 'L8'
     # A point within the reservoir [longitude, latitude]
-    point_coordinates = [101.636, 16.539]
+    point_coordinates = [98.9024, 17.2569]
     # Example coordinates [longitude, latitude]
-    boundary_coordinates = [101.590, 16.617, 101.660, 16.524]
+    boundary_coordinates = [98.515, 18.073, 99.005, 17.161]
     collection_id = "LANDSAT/LC08/C02/T1_TOA"      
-    start_data = '1980-06-01'
-    end_date = '2000-12-31'
+    start_data = '1981-01-01'
+    end_date = '2022-12-31'
     print("-----Landsat-8 data download start-----")
     get_landsat_images(dataFolder, Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
     print("Congratulations...all Landsat-8 files have successfully downloaded!")
@@ -156,8 +156,8 @@ if __name__ == "__main__":
     #====================================>> USER INPUT PARAMETERS (Landsat-7 Image Specifications)
     Satellite = 'L7'
     collection_id = "LANDSAT/LE07/C02/T1_TOA"      
-    start_data = '1980-06-01'
-    end_date = '2000-12-31'
+    start_data = '1981-01-01'
+    end_date = '2022-12-31'
     print(res_name)
     print("-----Landsat-7 data download start-----")
     get_landsat_images(dataFolder, Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)
@@ -167,8 +167,8 @@ if __name__ == "__main__":
     #====================================>> USER INPUT PARAMETERS (Landsat-5 Image Specifications)
     Satellite = 'L5'
     collection_id = "LANDSAT/LT05/C02/T1_TOA"      
-    start_data = '1980-06-01'
-    end_date = '2000-12-31'
+    start_data = '1981-01-01'
+    end_date = '2022-12-31'
     print(res_name)
     print("-----Landsat-5 data download start-----")
     get_landsat_images(dataFolder, Satellite, row, path, point_coordinates, boundary_coordinates, collection_id, start_data, end_date)

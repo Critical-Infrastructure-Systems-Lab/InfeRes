@@ -59,7 +59,7 @@ def best_fit_degree (xdata, ydata):
     from sklearn.metrics import r2_score
     
     # Maximum degree for polynomial regression
-    max_degree = 5
+    max_degree = 4
     
     # Lists to store R-squared values and RMSEs for each degree
     r_squared_values = []
@@ -154,8 +154,8 @@ def curve_extrapolate(xdata, ydata, bf_degree):
     coefficients = np.polyfit(xdata, ydata, degree)
     p = np.poly1d(coefficients)
     
-    # Generate area values approaching zero for extrapolation
-    extrapolated_xdata_values = np.linspace(0, max(xdata), 1000)  
+    # Generate area values approaching 30% of the largest area for extrapolation
+    extrapolated_xdata_values = np.linspace(0.2*min(xdata), max(xdata), 1000)  
     #extrapolated_area_values = np.linspace(max(area), 1.5*max(area), 1000)
     # Use the polynomial function to extrapolate elevation values for small area values
     extrapolated_ydata_values = p(extrapolated_xdata_values)
@@ -267,8 +267,8 @@ def curve_preDEM(res_name, point_loc, res_directory):
     # Extract column 2 and 3 from the array    
     data = results[1:, :]
     data = np.array(data, dtype=np.float32)
-    area = data[:, 1]    # area 
-    elevation = data[:, 0]    # elevation (ydata)
+    area = data[2:, 1]    # area 
+    elevation = data[2:, 0]    # elevation (ydata)
     
     # Function calling to get best-fit degree of polinomial
     bf_degree = best_fit_degree(area, elevation)
@@ -308,7 +308,7 @@ def curve_preDEM(res_name, point_loc, res_directory):
     # Set labels and title
     plt.xlabel('Level (m)')
     plt.ylabel('Storage (mcm)')
-    plt.title(res_name)
+    plt.title(res_name + ' (Minimum DEM level= '+ str(round(data[0,0]))+'m)')
     plt.savefig(res_name+'_storageVSelevation.png', dpi=600, bbox_inches='tight')
     
     return round(data[0,0])  
@@ -316,7 +316,7 @@ def curve_preDEM(res_name, point_loc, res_directory):
 
 
 #============================================================== E-A relationship
-def curve_postDEM(res_name, res_directory): 
+def curve_postDEM(res_name, max_wl, res_directory): 
     # caculating reservoir surface area and storage volume coresponding to each water level
     os.chdir(res_directory + "/Outputs")                    
     res_dem_file = (res_name + "_DEM_UTM_CLIP.tif")
@@ -334,7 +334,7 @@ def curve_postDEM(res_name, res_directory):
     # plt.colorbar()
     # 
     min_dem = int(np.nanmin(res_dem))
-    curve_ext = int(np.nanmax(res_dem))            
+    curve_ext = max_wl+20            
     res_dem_updated = ("DEM_Landsat_res_iso.tif")
         
     results = [["Level (m)", "Area (skm)", "Storage (mcm)"]]
@@ -355,8 +355,12 @@ def curve_postDEM(res_name, res_directory):
     # Extract column 2 and 3 from the array    
     data = results[1:, :]
     data = np.array(data, dtype=np.float32)
-    area = data[:, 1]    # area 
-    elevation = data[:, 0]    # elevation (ydata)
+    idx = np.where(data[:, 1]==min(data[:, 1]))
+    data = data[np.size(idx,1)-1:]
+    idx = np.where((data[:, 0] > 0) & (data[:, 1] > 0) & (data[:, 2] > 0))[0]
+    data = data[idx[0]:]
+    area = data[2:, 1]    # area 
+    elevation = data[2:, 0]    # elevation (ydata)
     
     # Function calling to get best-fit degree of polinomial
     from scipy.interpolate import interp1d
@@ -365,7 +369,7 @@ def curve_postDEM(res_name, res_directory):
     interpolated_elevation_values = interpolation_function(new_area_values)
     
     # Function calling to get best-fit E-A-S curve values
-    EA_curve = np.column_stack((interpolated_elevation_values, new_area_values))  
+    EA_curve = np.column_stack((interpolated_elevation_values[2:], new_area_values[2:]))  
     
     updated_results = [["Level (m)", "Area (skm)", "Storage (mcm)"]]
     pre_area = 0
@@ -396,10 +400,10 @@ def curve_postDEM(res_name, res_directory):
     # Set labels and title
     plt.xlabel('Level (m)')
     plt.ylabel('Storage (mcm)')
-    plt.title(res_name)
+    plt.title(res_name + ' (Minimum DEM level= '+ str(round(data[0,0]))+'m)')
     plt.savefig(res_name+'_storageVSelevation.png', dpi=600, bbox_inches='tight')
     
-    return min_dem
+    return round(data[0,0])
 
 
 #=================================== Update Landsat-based E-A database with DEM-based E-A-S relationship
@@ -420,7 +424,7 @@ def one_tile(res_name, max_wl, dead_wl, res_directory):
         Wsa.dem_value_m[i] = closest_elev
         Wsa.Tot_res_volume_mcm[i] = closest_vol
     
-    delete_id = Wsa[(Wsa['Quality'] == 0) | (Wsa['dem_value_m'] < dead_wl) | (Wsa['dem_value_m'] > max_wl+20)].index
+    delete_id = Wsa[(Wsa['Quality'] == 0) | (Wsa['dem_value_m'] > max_wl+20)].index  #(Wsa['dem_value_m'] < dead_wl)
     Wsa = Wsa.drop(delete_id)
     # ========================================== EXPORT RESULTS AS A CSV FILE
     Wsa.to_csv('WSA_updated_' + res_name + '.csv', index=False)

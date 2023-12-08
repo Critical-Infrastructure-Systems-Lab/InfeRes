@@ -15,26 +15,30 @@ from codes.CURVE import one_tile
 from codes.CURVE import curve_preDEM
 from codes.CURVE import curve_postDEM
 from codes.MASK import mask
-from codes.WSA import wsa
-
-
+from codes.WSA import wsa 
+import pandas as pd
+import numpy as np
+df = pd.read_csv('processing_res_list.csv', parse_dates=True)
 
 if __name__ == "__main__":
 
+    
     #====================================>> USER INPUT PARAMETERS 
+    i=0
+    #for i in range(0, np.size(df,0)):
     parent_directory = "G:/My Drive/NUSproject/ReservoirExtraction/Reservoirs/"
     os.chdir(parent_directory)
-    res_name = "Chulabhorn" 
-    res_built_year = 1972
+    res_name = df.Name[i] 
+    res_built_year = df.Year[i]
     dem_acquisition_year = 2000                             #SRTM DEM (30m) acquired in Feb 2000
     
     # Other Reservaoir information
     res_directory = parent_directory + res_name
     # A point within the reservoir [longitude, latitude]
-    point = [101.636, 16.539]
+    point = [float(value) for value in df.Point[i].split(',')]
     # Upper-Left and Lower-right coordinates. Example coordinates [longitude, latitude]
-    boundary = [101.590, 16.617, 101.660, 16.524] 
-    max_wl = 768                            
+    boundary = [float(value) for value in df.Boundary[i].split(',')] 
+    max_wl = df.Max_wl[i]                            
     os.makedirs(res_name, exist_ok=True)                  
     os.chdir(parent_directory + res_name)
     # Create a new folder within the working directory to download the data
@@ -42,6 +46,7 @@ if __name__ == "__main__":
     # Path to DEM (SouthEastAsia_DEM30m.tif), PCS: WGS1984
     # We have a bigger DEM file that is being used to clip the reservoir-DEM
     dem_file_path = "G:/My Drive/NUSproject/ReservoirExtraction/SEAsia_DEM/SouthEastAsia_DEM30m.tif"
+    print('Name of the reservoir: ' + res_name)
     
     #------------------->> FUNCTION CALLING -1
     # [1]. Data pre-processing (reprojection and clipping)
@@ -61,58 +66,59 @@ if __name__ == "__main__":
     
         
     # CASE1- Reservoir built before DEM acquisition ==============================================
-    if res_built_year < dem_acquisition_year:      
+    if res_built_year <= dem_acquisition_year:      
         print('Name of the reservoir: ' + res_name)
         print('Reservoir has built before the acquisition of DEM')
             
-        #------------------->> FUNCTION CALLING -4
-        # [4]. DEM-Landsat-based updated Area-Elevation-Storage curve
-        os.chdir(parent_directory + res_name + '/Outputs')
-        res_minElev = curve_preDEM(res_name, point_loc, res_directory)
-         
         #------------------->> FUNCTION CALLING -5
-        # [5]. Calculating the water surface area
+        # [4.1]. Calculating the water surface area
         os.chdir(res_directory)
         wsa(res_name, res_directory)
         
+        #------------------->> FUNCTION CALLING -4
+        # [5.1]. DEM-Landsat-based updated Area-Elevation-Storage curve
+        os.chdir(parent_directory + res_name + '/Outputs')
+        res_minElev = curve_preDEM(res_name, point_loc, res_directory)
+         
+
         #------------------->> FUNCTION CALLING -6
-        # [6]. Calculating the reservoir restorage (1 tiles)
+        # [6.1]. Calculating the reservoir restorage (1 tiles)
         os.chdir(res_directory)
         one_tile(res_name, max_wl, res_minElev, res_directory)
-
+    
     # CASE2- Reservoir built after DEM acquisition ==============================================
     if res_built_year > dem_acquisition_year:        
         print('Name of the reservoir: ' + res_name)
         print('Reservoir has built after the acquisition of DEM')
         
         #------------------->> FUNCTION CALLING -4
-        # [4]. DEM-Landsat-based updated Area-Elevation-Storage curve
-        os.chdir(parent_directory + res_name + '/Outputs')
-        res_minElev = curve_postDEM(res_name, res_directory)
-         
-        #------------------->> FUNCTION CALLING -5
-        # [5]. Calculating the water surface area
+        # [4.2]. Calculating the water surface area
         os.chdir(res_directory)
         wsa(res_name, res_directory)
         
+        #------------------->> FUNCTION CALLING -5
+        # [4.2]. DEM-Landsat-based updated Area-Elevation-Storage curve
+        os.chdir(parent_directory + res_name + '/Outputs')
+        res_minElev = curve_postDEM(res_name, max_wl, res_directory)
+         
         #------------------->> FUNCTION CALLING -6
-        # [6]. Calculating the reservoir restorage (1 tiles)
+        # [6.2]. Calculating the reservoir restorage (1 tiles)
         os.chdir(res_directory)
         one_tile(res_name, max_wl, res_minElev, res_directory)
 
 
-# ================================================ Finally  moving all .png/jpg files in a seperate folder for better organisation   
-import shutil
-# Create a folder to store the pictures if it doesn't exist
-pictures_folder = "intermediate_pictures"
-os.makedirs(pictures_folder, exist_ok=True)
-# List all files in the current directory
-files = os.listdir()
-# Move all PNG files to the 'pictures' directory
-for file in files:
-    if file.lower().endswith(".png"):
-        file_path = os.path.join(os.getcwd(), file)
-        shutil.move(file_path, os.path.join(pictures_folder, file))
+    # [7]. ============================ Finally  moving all .png/jpg files in a seperate folder for better organisation   
+    import shutil
+    # Create a folder to store the pictures if it doesn't exist
+    pictures_folder = "intermediate_pictures"
+    os.makedirs(pictures_folder, exist_ok=True)
+    # List all files in the current directory
+    files = os.listdir()
+    # Move all PNG files to the 'pictures' directory
+    for file in files:
+        if file.lower().endswith(".png"):
+            file_path = os.path.join(os.getcwd(), file)
+            shutil.move(file_path, os.path.join(pictures_folder, file))
                    
         
     

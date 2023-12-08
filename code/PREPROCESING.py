@@ -13,8 +13,9 @@ from osgeo import gdal, gdal_array
 import matplotlib.pyplot as plt
 import numpy as np
 
-def preprocessing(res_name, boundary, parent_directory, dem_file_path):
-    
+def preprocessing(res_name, boundary, parent_directory, dem_file_path):    
+
+ # STEP1 ================================================== DEM clip based on given extent    
     # clipping DEM by the bounding box
     print("Clipping DEM by the bounding box ...") 
     dem = gdal.Open(dem_file_path) 
@@ -25,12 +26,13 @@ def preprocessing(res_name, boundary, parent_directory, dem_file_path):
     dem = gdal.Translate(res_dem_file, dem, projWin = boundary)
     dem = None
     
+    #import matplotlib.pyplot as plt
     #image = gdal_array.LoadFile(res_dem_file)
     #plt.figure()
     #plt.imshow(image, cmap='jet')
     #plt.colorbar()
     
-# STEP1 ================================================== GCS to UTM 
+# STEP2 ================================================== GCS to UTM 
     data_folder_path= (parent_directory + res_name + '/' + res_name + '_LandsatData')
     # List all files in the folder
     all_files = os.listdir(data_folder_path)   
@@ -66,7 +68,7 @@ def preprocessing(res_name, boundary, parent_directory, dem_file_path):
     output_ds = None
     ref_ds = None
     
-# STEP2 =========================== Clipping with maximum overlapping area between DEM and LANDSAT-image   
+# STEP3 =========================== Clipping with maximum overlapping area between DEM and LANDSAT-image   
     # Input raster files
     dem_path = output_file 
     ndwi_path = ref_file
@@ -119,7 +121,7 @@ def preprocessing(res_name, boundary, parent_directory, dem_file_path):
     output_ndwi_ds.GetRasterBand(1).WriteArray(ndwi_subset)
     output_ndwi_ds = None
     
-# STEP3 ======================= Clipping all Landsat Images and saving in a new folder (folder name is "Clip")  
+# STEP4 ======================= Clipping all Landsat Images and saving in a new folder (folder name is "Clip")  
         
     os.chdir(parent_directory + res_name + '/' + res_name + '_LandsatData')
     data_directory = os.getcwd()
@@ -157,8 +159,11 @@ def preprocessing(res_name, boundary, parent_directory, dem_file_path):
     plt.title('Clipped DEM (UTM)')
     plt.savefig(res_name+"_DEM.png", dpi=600, bbox_inches='tight')
     #------------------ Visualization <End>
-    
+
     os.remove(res_name+"_NDWI_UTM_CLIP.tif")
+       
+
+    
     
 #================================= EXTRA (UTM to GCS)  ===================================        
     # # Input and output file paths
@@ -185,6 +190,50 @@ def preprocessing(res_name, boundary, parent_directory, dem_file_path):
     # # Close the input and output datasets
     # input_ds = None
     # output_ds = None
+    
+    
+### STEP5 ================================================== Remove bad landsat(5 and 8) images from clipped database 
+   # data_folder_path= (parent_directory + res_name + '/' + res_name + '_LandsatData')
+   # os.chdir(data_folder_path)
+   # all_files = os.listdir(data_folder_path)  
+   # filtered_filesL8 = [file for file in all_files if "Clipped_LC08_NDWI" in file]   
+   # filtered_filesL5 = [file for file in all_files if "Clipped_LT05_NDWI" in file] 
+   # ndwi_files = filtered_filesL8 + filtered_filesL5
+   # files_removed = 0
+   # count = 1
+   # for filename in ndwi_files:
+   #     print(count)
+   #     print(filename)
+   #     try:
+   #        image = gdal_array.LoadFile(filename).astype(np.float32)
+   #        plt.figure()
+   #        plt.imshow(image, cmap='jet')
+   #        plt.title(str(count))
+   #        plt.colorbar()
+
+   #         nan_row = np.zeros((np.size(image,0),2))
+   #         p20 = int(0.2*np.size(image,0))
+   #         p80 = int(0.8*np.size(image,0))
+   #         for i in range(p20, p80):
+   #             irow = image[i,:]
+   #             pix = len(sum(np.where(np.isnan(irow))))
+   #             nan_area_percentage = pix/np.size(image,1)*100
+   #             nan_row[i,0] = nan_area_percentage
+          
+   #         bad_data_threshold = len(sum(np.where(nan_row[:,0]>1)))/np.size(image,0)*100
+   #         if bad_data_threshold > 50: 
+   #             print('Removed')
+   #             BQA_filename = filename.replace('NDWI', 'BQA')
+   #             os.remove(filename)
+   #             os.remove(BQA_filename)
+   #             files_removed +=1
+              
+   #        image = None
+   #        count +=1
+   #     except:
+   #         continue 
+       
+   # print('files_removed=', str(files_removed))
 
 
         

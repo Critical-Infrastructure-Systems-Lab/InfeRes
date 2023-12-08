@@ -101,9 +101,9 @@ def mask(res_name, max_wl, point, boundary, res_directory):
     print("Estimating cloud fraction...")
     class_count = 0 
     cloud_threshold = 80
-    #L8band_quality_threshold= 22280     
-    #L7band_quality_threshold= 5896
-    #L5band_quality_threshold= 5896
+    L8band_quality_threshold= 22280     
+    L7band_quality_threshold= 5896
+    L5band_quality_threshold= 5896
     # See supplemental folder (Landsat documentation) for more information
     os.chdir(res_directory + "/Outputs") 
     res_iso = gdal_array.LoadFile('res_iso.tif').astype(np.float32)
@@ -117,8 +117,8 @@ def mask(res_name, max_wl, point, boundary, res_directory):
                 bqa = gdal_array.LoadFile(filename).astype(np.float32)
                 water_index = "Clipped_LC08_NDWI" + filename[16:]
                 ndwi = gdal_array.LoadFile(water_index).astype(np.float32)
-                bqa[np.where(bqa < 22280)] = 0
-                bqa[np.where(bqa >= 22280)] = 1
+                bqa[np.where(bqa < L8band_quality_threshold)] = 0
+                bqa[np.where(bqa >= L8band_quality_threshold)] = 1
                 bqa[np.where(res_iso == 0)] = 0
                 cloud_percentage = round(np.sum(bqa)/np.sum(res_iso)*100,2)
                 print(slno)
@@ -141,8 +141,8 @@ def mask(res_name, max_wl, point, boundary, res_directory):
                 bqa = gdal_array.LoadFile(filename).astype(np.float32)
                 water_index = "Clipped_LE07_NDWI"+filename[16:]
                 ndwi = gdal_array.LoadFile(water_index).astype(np.float32)
-                bqa[np.where(bqa < 5896)] = 0
-                bqa[np.where(bqa >= 5896)] = 1
+                bqa[np.where(bqa < L7band_quality_threshold)] = 0
+                bqa[np.where(bqa >= L7band_quality_threshold)] = 1
                 bqa[np.where(res_iso == 0)] = 0
                 cloud_percentage = round(np.sum(bqa)/np.sum(res_iso)*100,2)
                 print(slno)
@@ -165,8 +165,8 @@ def mask(res_name, max_wl, point, boundary, res_directory):
                 bqa = gdal_array.LoadFile(filename).astype(np.float32)
                 water_index = "Clipped_LT05_NDWI"+filename[16:]
                 ndwi = gdal_array.LoadFile(water_index).astype(np.float32)
-                bqa[np.where(bqa < 5896)] = 0
-                bqa[np.where(bqa >= 5896)] = 1
+                bqa[np.where(bqa < L5band_quality_threshold)] = 0
+                bqa[np.where(bqa >= L5band_quality_threshold)] = 1
                 bqa[np.where(res_iso == 0)] = 0
                 cloud_percentage = round(np.sum(bqa)/np.sum(res_iso)*100,2)
                 print(slno)
@@ -259,7 +259,7 @@ def mask(res_name, max_wl, point, boundary, res_directory):
     water_px[np.where(dem_clip <= max_wl+10)] = 1
     water_px[np.where(dem_clip > max_wl+10)] = 0
     picked_wp = pick(xp, yp, water_px)
-    dem_mask = expand(picked_wp, 1)
+    dem_mask = expand(picked_wp, 3)
     #dm_sum = np.nansum(dem_mask)     
     output = gdal_array.SaveArray(dem_mask.astype(gdal_array.numpy.float32), 
                                   "DEM_Mask.tif", format="GTiff", 
@@ -356,7 +356,7 @@ def mask(res_name, max_wl, point, boundary, res_directory):
     
     
     
-    # [6] ======================  CREATE EXPANDED MASK (by 1 pixels surrounding each of water pixels)
+    # [6] ======================  CREATE EXPANDED MASK (by 3 pixels surrounding each of water pixels)
     print('============ [6] CREATE EXPANDED MASK ===============')
     print("Creating expanded mask ...")
     os.chdir(res_directory +  "/Outputs")
@@ -366,7 +366,7 @@ def mask(res_name, max_wl, point, boundary, res_directory):
     mask = sum_mask
     mask[np.where(sum_mask <= 1)] = 0
     mask[np.where(sum_mask > 1)] = 1
-    exp_mask = expand(mask, 1) 
+    exp_mask = expand(mask, 3) 
     output = gdal_array.SaveArray(exp_mask.astype(gdal_array.numpy.float32), 
                                   "Expanded_Mask.tif", 
                                   format="GTiff", prototype = res_dem_file)

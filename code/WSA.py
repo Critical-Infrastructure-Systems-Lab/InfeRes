@@ -6,7 +6,6 @@ import numpy as np
 from sklearn.cluster import KMeans
 from osgeo import gdal_array
 
-
 def wsa(res_name, res_directory):
     # IMPROVE NDWI-BASED LANDSAT IMAGE CLASSIFICATION
     results = [["Landsat", "Type", "Date", "Threshold", "R_50", "N_10", "S_zone", 
@@ -26,6 +25,11 @@ def wsa(res_name, res_directory):
                 ndwi = gdal_array.LoadFile(filename).astype(np.float32)
                 ndwi = np.nan_to_num(ndwi, nan = -0.5)
                 
+                # import matplotlib.pyplot as plt
+                # plt.figure()
+                # plt.imshow(clip_ndwi, cmap='jet')
+                # plt.colorbar()
+                
                 # Clip NDWI rasters by the expanded mask 
                 exp_mask = gdal_array.LoadFile(drtr+"\Expanded_Mask.tif").astype(np.float32)
                 clip_ndwi = ndwi
@@ -33,8 +37,8 @@ def wsa(res_name, res_directory):
                 
                 # K-means clustering clipped NDWI raters to 3 clusters 
                 # (water, wet non-water, and dry non-water) (1 more cluster for the value of -0.5)
-                rows = len(clip_ndwi)
-                columns = len(clip_ndwi[0])
+                rows = len(clip_ndwi[:,1])
+                columns = len(clip_ndwi[1,:])
                 x = clip_ndwi.ravel()
                 km = KMeans(n_clusters=4, n_init=10)
                 km.fit(x.reshape(-1,1)) 
@@ -95,7 +99,7 @@ def wsa(res_name, res_directory):
                 for i in range(0, no_zones):
                     x_axis[i] = i + 1
                 xx = np.vstack((x_axis, ratio_nm)).T
-                kkm = KMeans(n_clusters=2).fit(xx)
+                kkm = KMeans(n_clusters=2, n_init=10).fit(xx)
                 llb = kkm.labels_
                 minx0 = no_zones
                 minx1 = no_zones
@@ -125,7 +129,7 @@ def wsa(res_name, res_directory):
                 # plt.show()
                  
                 recall_zm = gdal_array.LoadFile(drtr+"\Zone_Mask.tif").astype(np.float32)
-                add = recall_zm
+                add = recall_zm                
                 add[np.where(recall_zm < s_index)] = 0
                 improved = added_cluster = water_cluster + add
                 improved[np.where(added_cluster > 1)] = 1
