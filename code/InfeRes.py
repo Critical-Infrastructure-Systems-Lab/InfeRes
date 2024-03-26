@@ -97,7 +97,7 @@ if __name__ == "__main__":
         wsa(res_name, res_directory)
         
         #------------------->> FUNCTION CALLING -5
-        # [4.2]. DEM-Landsat-based updated Area-Elevation-Storage curve
+        # [5.2]. DEM-Landsat-based updated Area-Elevation-Storage curve
         os.chdir(parent_directory + res_name + '/Outputs')
         res_minElev = curve_postDEM(res_name, max_wl, res_directory)
          
