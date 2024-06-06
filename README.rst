@@ -36,8 +36,8 @@ Download **InfeRes package** from GitHub (`link <https://github.com/ssmahto/Infe
  2. **Folder containing reference GRanD curves**: *D:/My Drive/InfeRes_v0.2/GRAND_Curves/*
  3. **Folder containing all reservoir's data**: *D:/My Drive/Reservoirs/*
  4. **Folder containing data for (say) AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/*
- 5. **Folder containing raw satellite images for AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/AyunHa_RawData/*
- 6. **Folder containing supplementary satellite data for AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/AyunHa_Supporting/*
+ 5. **Folder containing raw satellite images for (say) AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/AyunHa_RawData/*
+ 6. **Folder containing supplementary satellite data for (say) AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/AyunHa_Supporting/*
 
 Dependencies
 ----------------
