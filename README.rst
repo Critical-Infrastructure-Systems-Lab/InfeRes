@@ -28,7 +28,7 @@ Components of InfeRes
 Folder structure
 ---------------------
 
-Download **InfeRes package** from GitHub (`link <https://github.com/ssmahto/InfeRes_v0.2/>`_) and unzip it inside any directory. For instance, our InfeRes path is *D:/My Drive/InfeRes_v0.2/*. Create another folder with name 'Reservoirs' (path *D:/My Drive/Reservoirs/*), where your satellite data will be downloaded.
+Download **InfeRes package** from GitHub (`link <https://github.com/ssmahto/InfeRes_v0.2/>`_) and unzip it inside any directory. For instance, our InfeRes path is *D:/My Drive/InfeRes_v0.2/*. The another folder 'Reservoirs' (path *D:/My Drive/Reservoirs/*), where your satellite data will be downloaded. We have provided the example data for AyunHa reservoir for a quick setup and testing InfeRes as a casy study. 
 
 Dependencies
 ----------------
@@ -122,7 +122,7 @@ Usage Instructions
 
 6. **WSA.py**
 
- ``WSA.py`` estimates the area and storage time-seties from the pre-preocessed time satellite images, which only takes intput as the name of the reservoir.
+ ``WSA.py`` estimates the area and storage time-series from the pre-preocessed time satellite images, which only takes intput as the name of the reservoir.
  
  Inputs required (variable name):
  
