@@ -30,6 +30,15 @@ Folder structure
 
 Download **InfeRes package** from GitHub (`link <https://github.com/ssmahto/InfeRes_v0.2/>`_) and unzip it inside any directory. For instance, our InfeRes path is *D:/My Drive/InfeRes_v0.2/*. The another folder 'Reservoirs' (path *D:/My Drive/Reservoirs/*), where your satellite data will be downloaded. We have provided the example data for AyunHa reservoir for a quick setup and testing InfeRes as a casy study. 
 
+**NOTE**: Please unzip all compressed folders before running InfeRes. The folder directories and their paths should be as follows after the unzip:
+
+ 1. **Folder containing InfeRes modules**: *D:/My Drive/InfeRes_v0.2/*
+ 2. **Folder containing reference GRanD curves**: *D:/My Drive/InfeRes_v0.2/GRAND_Curves/*
+ 3. **Folder containing all reservoir's data**: *D:/My Drive/Reservoirs/*
+ 4. **Folder containing data for (say) AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/*
+ 5. **Folder containing raw satellite images for AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/AyunHa_RawData/*
+ 6. **Folder containing supplementary satellite data for AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/AyunHa_Supporting/*
+
 Dependencies
 ----------------
 
@@ -69,20 +78,20 @@ Usage Instructions
 
   Inputs required (variable name):
  
-  - Name of the reservoir (res_name) = Salto
-  - Year of commission (res_built_year) = 1979
-  - Bounding box (boundary) = [-58.204045, -30.379470, -57.417353, -31.371091]. Where, (-58.204045, -30.379470) and (-57.417353, -31.371091) are the (longitude, latitude) of top-left and bottom-right points of the bounding box.
+  - Name of the reservoir (res_name) = AyunHa
+  - Year of commission (res_built_year) = 1997
+  - Bounding box (boundary) = [108.155, 13.700, 108.300, 13.575]. Where, (108.155, 13.700) and (108.300, 13.575) are the (longitude, latitude) of top-left and bottom-right points of the bounding box.
 
- The data will be downloaded inside *D:/My Drive/Reservoirs/Salto/* in two different folders.
+ The data will be downloaded inside *D:/My Drive/Reservoirs/AyunHa/* in two different folders.
  
-  - Raw satellite data (Normalized Difference Water Index or NDWI in this case) will be at *D:/My Drive/Reservoirs/Salto/Salto_RawData/*.
-  - Supplementry data (DEM, Water frequency, Maximum reservoir extent in this case) will be at *D:/My Drive/Reservoirs/Salto/Salto_Supporting/*.
+  - Raw satellite data (Normalized Difference Water Index or NDWI in this case) will be at *D:/My Drive/Reservoirs/AyunHa/AyunHa_RawData/*.
+  - Supplementry data (DEM, Water frequency, Maximum reservoir extent in this case) will be at *D:/My Drive/Reservoirs/AyunHa/AyunHa_Supporting/*.
 
 2. **DataDownload_GEE_GoogleColab.py**
 
- ``DataDownload_GEE_GoogleColab.py`` is an alternative of ``DataDownload_GEE.py``, which runs of web browser-based python environment such as Google Colab. It also takes the same set of inputs (i.e. Name of the reservoir, Year of commission, and Bounding box). However, in this case the data will be downloaded in next in your Google Drive, so the downloading path will be *D:/My Drive/Salto_RawData/* and *D:/My Drive/Salto_Supporting/* for raw satellite data and supplementry data, respectively.
+ ``DataDownload_GEE_GoogleColab.py`` is an alternative of ``DataDownload_GEE.py``, which runs of web browser-based python environment such as Google Colab. It also takes the same set of inputs (i.e. Name of the reservoir, Year of commission, and Bounding box). However, in this case the data will be downloaded in next in your Google Drive, so the downloading path will be *D:/My Drive/AyunHa_RawData/* and *D:/My Drive/AyunHa_Supporting/* for raw satellite data and supplementry data, respectively.
  
- Please note that you need to maintain the folder structure as *D:/My Drive/Reservoirs/Salto/Salto_RawData/* and *D:/My Drive/Reservoirs/Salto/Salto_Supporting/* before running the InfeRes modules. Therefore, you need to move the data to the correct folder arrangement once the downloading is completed.  
+ Please note that you need to maintain the folder structure as *D:/My Drive/Reservoirs/AyunHa/AyunHa_RawData/* and *D:/My Drive/Reservoirs/AyunHa/AyunHa_Supporting/* before running the InfeRes modules. Therefore, you need to move the data to the correct folder arrangement once the downloading is completed.  
 
 3. **PREPROCESSING.py**
 
@@ -95,11 +104,11 @@ Usage Instructions
 
  Inputs required (variable name):
  
-  - Name of the reservoir (res_name) = Salto
-  - Year of commission (res_built_year) = 1979
-  - Maximum water level in meter (max_wl) = 43
-  - A point coordinates on the reservoir (point) = [-57.913791, -30.943991]
-  - Reservoir's bounding box coordinates (boundary) = [-58.204045, -30.379470, -57.417353, -31.371091]
+  - Name of the reservoir (res_name) = AyunHa
+  - Year of commission (res_built_year) = 1997
+  - Maximum water level in meter (max_wl) = 211
+  - A point coordinates on the reservoir (point) = [108.232, 13.638]
+  - Reservoir's bounding box coordinates (boundary) = [108.155, 13.700, 108.300, 13.575]
 
 4. **CURVE.py**
 
@@ -109,16 +118,16 @@ Usage Instructions
 
   a. If reservoir has built before the acquisition of DEM (i.e. year 2000, as we are using SRTM DEM):
  
-   - Name of the reservoir (res_name) = Salto
-   - Identification number of the reservoir in the GRanD v1.3 database (grandID) = 230
-   - Maximum water level in meter (max_wl) = 43
-   - A point coordinates on the reservoir (point) = [-57.913791, -30.943991]
-   - Reservoir's bounding box coordinates (boundary) = [-58.204045, -30.379470, -57.417353, -31.371091]
+   - Name of the reservoir (res_name) = AyunHa
+   - Identification number of the reservoir in the GRanD v1.3 database (grandID) = 7153
+   - Maximum water level in meter (max_wl) = 211
+   - A point coordinates on the reservoir (point) = [108.232, 13.638]
+   - Reservoir's bounding box coordinates (boundary) = [108.155, 13.700, 108.300, 13.575]
 
   b. If reservoir has built after the acquisition of DEM (i.e. year 2000, as we are using SRTM DEM):
  
-   - Name of the reservoir (res_name) = Salto
-   - Maximum water level in meter (max_wl) = 43
+   - Name of the reservoir (res_name) = AyunHa
+   - Maximum water level in meter (max_wl) = 211
 
 6. **WSA.py**
 
@@ -126,7 +135,7 @@ Usage Instructions
  
  Inputs required (variable name):
  
-  - Name of the reservoir (res_name) = Salto
+  - Name of the reservoir (res_name) = AyunHa
 
 How to Run?
 ---------------------
@@ -142,12 +151,12 @@ How to Run?
 
     **inputs_InfeRes.csv** contains:
  
-    * Name of the reservoir (res_name) = Salto
-    * Year of commission (res_built_year) = 1979
-    * Maximum water level in meter (max_wl) = 43
-    * GRanD ID = 230 (if GRanD ID is not available, put 0)
-    * A point coordinates on the reservoir (point) = [-57.913791, -30.943991]
-    * Reservoir's bounding box coordinates (boundary) = [-58.204045, -30.379470, -57.417353, -31.371091]
+    * Name of the reservoir (res_name) = AyunHa
+    * Year of commission (res_built_year) = 1997
+    * Maximum water level in meter (max_wl) = 211
+    * GRanD ID = 7153 (if GRanD ID is not available, put 0)
+    * A point coordinates on the reservoir (point) = [108.232, 13.638]
+    * Reservoir's bounding box coordinates (boundary) = [108.155, 13.700, 108.300, 13.575]
     * Run the ``main.py``
 
  NOTE: ``main.py`` calls other modules in a sequential order (``PREPROCESSING.py`` -> ``CURVE.py`` -> ``WSA.py``) to get the desired outputs (i.e. reservoir's area, level, and storage in this case).
