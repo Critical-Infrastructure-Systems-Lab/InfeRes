@@ -28,7 +28,7 @@ Components of InfeRes
 Folder structure
 ---------------------
 
-Download **InfeRes package** from GitHub (`link <https://github.com/ssmahto/InfeRes_v1.0/>`_) and unzip it inside any directory. For instance, our InfeRes path is *D:/My Drive/InfeRes_v1.0/*. Create another folder with name 'Reservoirs' (path *D:/My Drive/Reservoirs/*), where your satellite data will be downloaded.
+Download **InfeRes package** from GitHub (`link <https://github.com/ssmahto/InfeRes_v0.2/>`_) and unzip it inside any directory. For instance, our InfeRes path is *D:/My Drive/InfeRes_v0.2/*. Create another folder with name 'Reservoirs' (path *D:/My Drive/Reservoirs/*), where your satellite data will be downloaded.
 
 Dependencies
 ----------------
@@ -133,7 +133,7 @@ How to Run?
 
 **Step 1.** Run either **DataDownload_GEE_GoogleColab.py** or **DataDownload_GEE.py** standalone, and let the data download finish (i.e. Satellite NDWI images, Maximum water extent, Water frequency, and DEM).
 
-**Step 2.** (Assuming you already have all the required datasets) Open Spyder and locate the directory to the InfeRes_v1.0, and load the modules ``main.py``, ``PREPROCESSING.py``, ``CURVE.py``, and ``WSA.py``.
+**Step 2.** (Assuming you already have all the required datasets) Open Spyder and locate the directory to the InfeRes_v0.2, and load the modules ``main.py``, ``PREPROCESSING.py``, ``CURVE.py``, and ``WSA.py``.
 
 **Step 3.** Configure ``main.py``
 
