@@ -1,14 +1,14 @@
-Welcome to InfeRes: A Python package for inferring reservoir water surfacea area, level and storage volume
+Welcome to InfeRes: A Python package for inferring reservoir water surface area, level and storage volume
 ============================================================================================================
 
 .. image:: https://img.shields.io/pypi/l/sciris.svg
  :target: https://github.com/ssmahto/InfeRes_test/blob/main/LICENSE
 
 ``InfeRes`` is a python package that is designed to help automatic extraction of reservoir characteristics (water surface area, level, and storage-volume) time-series by taking leverage
-of the Google Earth Engine data collection (`Landsat series <https://developers.google.com/earth-engine/datasets/catalog/landsat/>`_, `Sentinel-2 <https://developers.google.com/earth-engine/datasets/catalog/sentinel-2/>`_), and high resolition `DEM (30m) <https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm-1/>`_.
+of the Google Earth Engine data collection (`Landsat series <https://developers.google.com/earth-engine/datasets/catalog/landsat/>`_, `Sentinel-2 <https://developers.google.com/earth-engine/datasets/catalog/sentinel-2/>`_), and high resolution `DEM (30m) <https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm-1/>`_.
 It built on top of `GDAL <https://gdal.org/>`_, `Scikit-Learn <https://scikit-learn.org/>`_, `NumPy <https://numpy.org/>`_ and `Matplotlib <https://matplotlib.org/>`_,
 and other popular python packages. ``InfeRes`` is developed with a novel algorithm which helps inferring reservoir characteristics even from the partially cloudy images.
-``InfeRes`` can be applied to monitor water surface area in any reservoir or waterbody; whereas, storage-volume can be obtained for the large reservoirs (storage >= 0.1m:sup:`3`) listed in the `GRanD <https://www.globaldamwatch.org/directory/>`_ databse.
+``InfeRes`` can be applied to monitor water surface area in any reservoir or waterbody; whereas, storage-volume can be obtained for the large reservoirs (storage >= 0.1m:sup:`3`) listed in the `GRanD <https://www.globaldamwatch.org/directory/>`_ database.
 
 Components of InfeRes
 ---------------------
@@ -28,7 +28,7 @@ Components of InfeRes
 Folder structure
 ---------------------
 
-Download **InfeRes package** from GitHub (`link <https://github.com/ssmahto/InfeRes_v0.2/>`_) and unzip it inside any directory. For instance, our InfeRes path is *D:/My Drive/InfeRes_v0.2/*. The another folder 'Reservoirs' (path *D:/My Drive/Reservoirs/*), where your satellite data will be downloaded. We have provided the example data for AyunHa reservoir for a quick setup and testing InfeRes as a casy study. 
+Download **InfeRes package** from GitHub (`link <https://github.com/ssmahto/InfeRes_v0.2/>`_) and unzip it inside any directory. For instance, our InfeRes path is *D:/My Drive/InfeRes_v0.2/*. Another folder 'Reservoirs' (path *D:/My Drive/Reservoirs/*), where your satellite data will be downloaded. We have provided the example data for AyunHa reservoir for a quick setup and testing InfeRes as a case study. 
 
 **NOTE**: Please unzip all compressed folders before running InfeRes. The folder directories and their paths should be as follows after the unzip:
 
@@ -61,20 +61,20 @@ Installation
    
 - Install all libraries within the built environment (following steps are recommended).
 
- i) conda install -c conda-forge **gdal=3.9.0** (assuming 3.9.0 is the latest vesrion of GDAL)
+ i) conda install -c conda-forge **gdal=3.9.0** (assuming 3.9.0 is the latest version of GDAL)
  ii) conda install -c conda-forge **rasterio**
  iii) conda install -c conda-forge **spyder**
  iv) conda install -c conda-forge **earthengine-api**
  v) Similarly install all the other libraries
 
-- Open spyder and load all the InfeRes modules (i.e ``DataDownload_GEE.py``, ``main.py``, ``CURVE.py``, ``PREPROCESSING.py``, and ``WSA.py``)
+- Open spyder and load all the InfeRes modules (i.e. ``DataDownload_GEE.py``, ``main.py``, ``CURVE.py``, ``PREPROCESSING.py``, and ``WSA.py``)
 
 Usage Instructions
 ---------------------
 
 1. **DataDownload_GEE.py**
 
- ``DataDownload_GEE.py`` is the first step towards running **InfeRes**. ``DataDownload_GEE.py`` will download the satellite images and store them in the Google Drive. Therefore, make sure you have sufficient space in your cloud storage (Google Drive in this case) before running ``DataDownload_GEE.py``. Please also note that the downloading will take time to finish, which depends on the size of satellite image, downloading speed, and the number of images ordered. Therefore, one should first run ``DataDownload_GEE.py`` standalone, and wait until all the orders are successfullty downloaded before running the other modules of InfeRes.  
+ ``DataDownload_GEE.py`` is the first step towards running **InfeRes**. ``DataDownload_GEE.py`` will download the satellite images and store them in the Google Drive. Therefore, make sure you have sufficient space in your cloud storage (Google Drive in this case) before running ``DataDownload_GEE.py``. Please also note that the downloading will take time to finish, which depends on the size of satellite image, downloading speed, and the number of images ordered. Therefore, one should first run ``DataDownload_GEE.py`` standalone, and wait until all the orders are successfully downloaded before running the other modules of InfeRes.  
 
   Inputs required (variable name):
  
@@ -85,11 +85,11 @@ Usage Instructions
  The data will be downloaded inside *D:/My Drive/Reservoirs/AyunHa/* in two different folders.
  
   - Raw satellite data (Normalized Difference Water Index or NDWI in this case) will be at *D:/My Drive/Reservoirs/AyunHa/AyunHa_RawData/*.
-  - Supplementry data (DEM, Water frequency, Maximum reservoir extent in this case) will be at *D:/My Drive/Reservoirs/AyunHa/AyunHa_Supporting/*.
+  - Supplementary data (DEM, Water frequency, Maximum reservoir extent in this case) will be at *D:/My Drive/Reservoirs/AyunHa/AyunHa_Supporting/*.
 
 2. **DataDownload_GEE_GoogleColab.py**
 
- ``DataDownload_GEE_GoogleColab.py`` is an alternative of ``DataDownload_GEE.py``, which runs of web browser-based python environment such as Google Colab. It also takes the same set of inputs (i.e. Name of the reservoir, Year of commission, and Bounding box). However, in this case the data will be downloaded in next in your Google Drive, so the downloading path will be *D:/My Drive/AyunHa_RawData/* and *D:/My Drive/AyunHa_Supporting/* for raw satellite data and supplementry data, respectively.
+ ``DataDownload_GEE_GoogleColab.py`` is an alternative of ``DataDownload_GEE.py``, which runs of web browser-based python environment such as Google Colab. It also takes the same set of inputs (i.e. Name of the reservoir, Year of commission, and Bounding box). However, in this case the data will be downloaded in next in your Google Drive, so the downloading path will be *D:/My Drive/AyunHa_RawData/* and *D:/My Drive/AyunHa_Supporting/* for raw satellite data and supplementary data, respectively.
  
  Please note that you need to maintain the folder structure as *D:/My Drive/Reservoirs/AyunHa/AyunHa_RawData/* and *D:/My Drive/Reservoirs/AyunHa/AyunHa_Supporting/* before running the InfeRes modules. Therefore, you need to move the data to the correct folder arrangement once the downloading is completed.  
 
@@ -99,7 +99,7 @@ Usage Instructions
 
   - Creating the reservoir isolation raster (binary map of reservoir maximum extent).
   - Creating reservoir isolation for DEM (masked DEM)
-  - Reprojecting and resizing (or clipping) the satellite images including DEM, water extent, and frequency rasters.
+  - Reprojecting and resizing (or clipping) the satellite images including DEM, water extent, and frequency raster.
   - Creating a collection of relatively good quality (less cloud cover) satellite images.
 
  Inputs required (variable name):
@@ -129,9 +129,9 @@ Usage Instructions
    - Name of the reservoir (res_name) = AyunHa
    - Maximum water level in meter (max_wl) = 211
 
-6. **WSA.py**
+5. **WSA.py**
 
- ``WSA.py`` estimates the area and storage time-series from the pre-preocessed time satellite images, which only takes intput as the name of the reservoir.
+ ``WSA.py`` estimates the area and storage time-series from the pre-processed time satellite images, which only takes input as the name of the reservoir.
  
  Inputs required (variable name):
  
@@ -146,8 +146,8 @@ How to Run?
 
 **Step 3.** Configure ``main.py``
 
-  - Modify the path of InfeRes directory  (i.e. **parent_directory**)
-  - Prepare the input file  (i.e. **inputs_InfeRes.csv**)
+  - Modify the path of InfeRes directory (i.e. **parent_directory**)
+  - Prepare the input file (i.e. **inputs_InfeRes.csv**)
 
     **inputs_InfeRes.csv** contains:
  
