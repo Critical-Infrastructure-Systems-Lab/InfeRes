@@ -28,12 +28,12 @@ Components of InfeRes
 Folder structure
 ---------------------
 
-Download **InfeRes package** from GitHub (`link <https://github.com/ssmahto/InfeRes_v0.2/>`_) and unzip it inside any directory. For instance, our InfeRes path is *D:/My Drive/InfeRes_v0.2/*. Another folder 'Reservoirs' (path *D:/My Drive/Reservoirs/*), where your satellite data will be downloaded. We have provided the example data for AyunHa reservoir for a quick setup and testing InfeRes as a case study. 
+Download **InfeRes package** from GitHub (`link <https://github.com/Critical-Infrastructure-Systems-Lab/InfeRes/>`_) and unzip it inside any directory. For instance, after unzip InfeRes path should be *D:/My Drive/code/*. Another folder 'Reservoirs' (path *D:/My Drive/Reservoirs/*), where your satellite data will be downloaded. We have provided the example data for AyunHa reservoir for a quick setup and testing InfeRes as a case study. 
 
 **NOTE**: Please unzip all compressed folders before running InfeRes. The folder directories and their paths should be as follows after the unzip:
 
- 1. **Folder containing InfeRes modules**: *D:/My Drive/InfeRes_v0.2/*
- 2. **Folder containing reference GRanD curves**: *D:/My Drive/InfeRes_v0.2/GRAND_Curves/*
+ 1. **Folder containing InfeRes modules**: *D:/My Drive/code/*
+ 2. **Folder containing reference GRanD curves**: *D:/My Drive/code/GRAND_Curves/*
  3. **Folder containing all reservoir's data**: *D:/My Drive/Reservoirs/*
  4. **Folder containing data for (say) AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/*
  5. **Folder containing raw satellite images for (say) AyunHa reservoir**: *D:/My Drive/Reservoirs/AyunHa/AyunHa_RawData/*
@@ -142,7 +142,7 @@ How to Run?
 
 **Step 1.** Run either **DataDownload_GEE_GoogleColab.py** or **DataDownload_GEE.py** standalone, and let the data download finish (i.e. Satellite NDWI images, Maximum water extent, Water frequency, and DEM).
 
-**Step 2.** (Assuming you already have all the required datasets) Open Spyder and locate the directory to the InfeRes_v0.2, and load the modules ``main.py``, ``PREPROCESSING.py``, ``CURVE.py``, and ``WSA.py``.
+**Step 2.** (Assuming you already have all the required datasets) Open Spyder and locate the directory to the code, and load the modules ``main.py``, ``PREPROCESSING.py``, ``CURVE.py``, and ``WSA.py``.
 
 **Step 3.** Configure ``main.py``
 
