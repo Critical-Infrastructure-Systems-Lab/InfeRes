@@ -175,6 +175,18 @@ The outputs will be saved in a folder called *'Outputs'* in the same directory w
  - Intermediate raster images
  - Intermediate figures (inside a seperate folder called *JPG_files*)
 
+Accknowledgement 
+---------------------
+
+We have accquired the reference GRanD curves (reservoir's reconstructed bathemarty)  form `Hao et al., (2024) <https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023WR035781>`_, applied to the list of reservoirs in the Global Reservoir and Dam (GRanD) Database (`Lehner et al., 2011 <https://esajournals.onlinelibrary.wiley.com/doi/10.1890/100125>`_).  
+
+ - Hao, Z., Chen, F., Jia, X., Cai, X., Yang, C., Du, Y., & Ling, F. (2024). GRDL: A New Global Reservoir Area‐Storage‐Depth Data Set Derived Through Deep Learning‐Based Bathymetry Reconstruction. Water Resources Research, 60(1), e2023WR035781.
+
+ - Lehner, B., C. Reidy Liermann, C. Revenga, C. Vörösmarty, B. Fekete, P. Crouzet, P. Döll, M. Endejan, K. Frenken, J. Magome, C. Nilsson, J.C. Robertson, R. Rodel, N. Sindorf, and D. Wisser. 2011. High-resolution mapping of the world’s reservoirs and dams for sustainable river-flow management. Frontiers in Ecology and the Environment 9 (9): 494-502.
+
+
+
+
 
 
 
