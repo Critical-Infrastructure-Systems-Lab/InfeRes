@@ -7,7 +7,7 @@
 # IMPORTING LIBRARY
 
 import os 
-parent_directory = "G:/My Drive/InfeRes_Version1/"    # Path/to/InfeRes/
+parent_directory = "E:/InfeRes_v0.2/"    # Path/to/InfeRes/
 os.chdir(parent_directory)
 from PREPROCESING import preprocessing
 from CURVE import curve_preDEM
@@ -27,6 +27,7 @@ if __name__ == "__main__":
         res_built_year = df.Year[i]
         dem_acquisition_year = 2000            # SRTM DEM (30m) acquired in Feb 2000
         grandID = df.GRAND_ID[i]
+        grandCapacity = df.GRAND_Capacity[i]
         # A point within the reservoir [longitude, latitude]
         point = [float(value) for value in df.Point[i].split(',')]
         # Upper-Left and Lower-right coordinates. Example coordinates [longitude, latitude]
@@ -48,7 +49,7 @@ if __name__ == "__main__":
             # [[B.1]]. Area-Elevation-Storage curve 
             os.chdir(parent_directory)
             os.chdir(res_directory)
-            res_minElev = curve_preDEM(res_name, max_wl, parent_directory, grandID, point, boundary)
+            res_minElev = curve_preDEM(res_name, point, boundary, max_wl, parent_directory, grandID, grandCapacity)
             
             # [[C.1]]. Calculating the water surface area
             os.chdir(parent_directory)
@@ -69,19 +70,3 @@ if __name__ == "__main__":
             os.chdir(parent_directory)
             os.chdir(res_directory)
             wsa_latest(res_name)
-
-                   
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
