@@ -123,6 +123,7 @@ Usage Instructions
    - Maximum water level in meter (max_wl) = 211
    - A point coordinates on the reservoir (point) = [108.232, 13.638]
    - Reservoir's bounding box coordinates (boundary) = [108.155, 13.700, 108.300, 13.575]
+   - Reservoir's design capacity (i.e. maximum capacity) = 253 (this value can be extracted from the GRanD database)
 
   b. If reservoir has built after the acquisition of DEM (i.e. year 2000, as we are using SRTM DEM):
  
@@ -154,9 +155,10 @@ How to Run?
     * Name of the reservoir (res_name) = AyunHa
     * Year of commission (res_built_year) = 1997
     * Maximum water level in meter (max_wl) = 211
-    * GRanD ID = 7153 (if GRanD ID is not available, put 0)
+    * GRanD ID = 7153 (if GRanD ID is not available, assign 0)
     * A point coordinates on the reservoir (point) = [108.232, 13.638]
     * Reservoir's bounding box coordinates (boundary) = [108.155, 13.700, 108.300, 13.575]
+    * Reservoir's design capacity = 253 (assign 0, if reservoir has built after 2000)
     * Run the ``main.py``
 
  NOTE: ``main.py`` calls other modules in a sequential order (``PREPROCESSING.py`` -> ``CURVE.py`` -> ``WSA.py``) to get the desired outputs (i.e. reservoir's area, level, and storage in this case).
