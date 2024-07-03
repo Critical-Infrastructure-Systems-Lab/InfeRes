@@ -182,6 +182,7 @@ def curve_preDEM(res_name, point, boundary, max_wl, parent_directory, grandID, g
     wl_extra = np.max(data2[:,0])-max_wl 
     corrected_curve_final = corrected_curve_final[:-int(round(wl_extra/2))]
     data2 = data2[:-int(round(wl_extra/2))]
+    data = data[:-int(round(wl_extra/2))]
     
     # saving output as a csv file
     with open('Curve.csv',"w", newline='') as my_csv:
