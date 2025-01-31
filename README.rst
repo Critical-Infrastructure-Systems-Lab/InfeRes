@@ -177,6 +177,14 @@ The outputs will be saved in a folder called *'Outputs'* in the same directory w
  - Intermediate raster images
  - Intermediate figures (inside a seperate folder called *JPG_files*)
 
+References 
+---------------------
+
+- Vu, T.D., Dang, T.D., Galelli, S., Hossain, F. (2022) `Satellite observations reveal 13 years of reservoir filling strategies, operating rules, and hydrological alterations in the Upper Mekong River basin. <https://hess.copernicus.org/articles/26/2345/2022/>` Hydrol. Earth Syst. Sci., 26, 2345–2364.
+
+- Mahto, S., Fatichi, S., Galelli, S. (2024) `A 1985–2023 time series dataset of absolute reservoir storage in Mainland Southeast Asia (MSEA-Res). <https://essd.copernicus.org/preprints/essd-2024-441/>` Earth Syst. Sci. Data Discuss, in review.
+
+
 Acknowledgement 
 ---------------------
 
