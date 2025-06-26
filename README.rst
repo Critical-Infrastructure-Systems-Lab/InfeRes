@@ -1,4 +1,4 @@
-InfeRes: A Python Package for Inferring Reservoir Water Surface Area, Level and Storage Volume
+InfeRes: A Python Package for Inferring Reservoir Water Surface Area, Level, and Storage Volume
 ==============================================================================================
 
 .. image:: https://img.shields.io/pypi/l/sciris.svg
