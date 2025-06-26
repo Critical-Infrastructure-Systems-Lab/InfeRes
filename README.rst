@@ -12,25 +12,25 @@ and other popular python packages. ``InfeRes`` is developed with a novel algorit
 
 The InfeRes workflow is fully modularized, with scripts organized by function:
 
-1- main.py: Central orchestration script for running the full InfeRes pipeline over multiple reservoirs.
+1- ``main.py``: Central orchestration script for running the full InfeRes pipeline over multiple reservoirs.
 
-2- utils.py: Generic helper functions for raster operations, coordinate transformations, and basic math.
+2- ``utils.py``: Generic helper functions for raster operations, coordinate transformations, and basic math.
 
-3- metadata_builder.py: Generates geospatial metadata from the GRanD database for input preparation.
+3- ``metadata_builder.py``: Generates geospatial metadata from the GRanD database for input preparation.
 
-4- download_baselayers.py: Downloads foundational datasets (e.g., DEM, GSW frequency, and maximum extent layers) from Google Earth Engine.
+4- ``download_baselayers.py``: Downloads foundational datasets (e.g., DEM, GSW frequency, and maximum extent layers) from Google Earth Engine.
 
-5- reservoir_delineation.py: Identifies reservoir extents based on DEMs and frequency maps.
+5- ``reservoir_delineation.py``: Identifies reservoir extents based on DEMs and frequency maps.
 
-6- reservoir_curve.py: Builds hypsometric curves from DEM data and reference curves (e.g., GRDL dataset).
+6- ``reservoir_curve.py``: Builds hypsometric curves from DEM data and reference curves (e.g., GRDL dataset).
 
-7- satellite_composite.py: Constructs Landsat and Sentinel-based NDWI composites over specified periods and regions.
+7- ``satellite_composite.py``: Constructs Landsat and Sentinel-based NDWI composites over specified periods and regions.
 
-8- ndwi_processing.py: Preprocesses Landsat and Sentinel imagery, including NDWI calculation and cloud masking.
+8- ``ndwi_processing.py``: Preprocesses Landsat and Sentinel imagery, including NDWI calculation and cloud masking.
 
-9- satellite_water_area.py: Extracts water surface area from satellite NDWI using filtering and clustering methods.
+9- ``satellite_water_area.py``: Extracts water surface area from satellite NDWI using filtering and clustering methods.
 
-10- area_to_storage.py: Converts surface water area estimates into elevation and storage (volume) using reservoir hypsometric curve.
+10- ``area_to_storage.py``: Converts surface water area estimates into elevation and storage (volume) using reservoir hypsometric curve.
 
 
 Dependencies
@@ -54,9 +54,9 @@ Acknowledgement
 
 We have acquired the reference GRAND_Curves (reservoir's reconstructed bathymetry) form `Hao et al., (2024) <https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023WR035781>`_, which is available for the list of reservoirs in the Global Reservoir and Dam (GRanD) Database (`Lehner et al., 2011 <https://esajournals.onlinelibrary.wiley.com/doi/10.1890/100125>`_).  
 
- - Hao, Z., Chen, F., Jia, X., Cai, X., Yang, C., Du, Y., & Ling, F. (2024). GRDL: A New Global Reservoir Area‐Storage‐Depth Data Set Derived Through Deep Learning‐Based Bathymetry Reconstruction. Water Resources Research, 60(1), e2023WR035781.
+- Hao, Z., Chen, F., Jia, X., Cai, X., Yang, C., Du, Y., & Ling, F. (2024). GRDL: A New Global Reservoir Area‐Storage‐Depth Data Set Derived Through Deep Learning‐Based Bathymetry Reconstruction. Water Resources Research, 60(1), e2023WR035781.
 
- - Lehner, B., C. Reidy Liermann, C. Revenga, C. Vörösmarty, B. Fekete, P. Crouzet, P. Döll, M. Endejan, K. Frenken, J. Magome, C. Nilsson, J.C. Robertson, R. Rodel, N. Sindorf, and D. Wisser. 2011. High-resolution mapping of the world’s reservoirs and dams for sustainable river-flow management. Frontiers in Ecology and the Environment 9 (9): 494-502.
+- Lehner, B., C. Reidy Liermann, C. Revenga, C. Vörösmarty, B. Fekete, P. Crouzet, P. Döll, M. Endejan, K. Frenken, J. Magome, C. Nilsson, J.C. Robertson, R. Rodel, N. Sindorf, and D. Wisser. 2011. High-resolution mapping of the world’s reservoirs and dams for sustainable river-flow management. Frontiers in Ecology and the Environment 9 (9): 494-502.
 
 
 
