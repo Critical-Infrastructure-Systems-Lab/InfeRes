@@ -32,6 +32,21 @@ The InfeRes workflow is fully modularized, with scripts organized by function:
 
 10- ``area_to_storage.py``: Converts surface water area estimates into elevation and storage (volume) using reservoir hypsometric curve.
 
+11- ``area_postprocessing.py``: Performs postprocessing of reservoir area time series, including statistical outlier removal and temporal smoothing to generate clean and consistent estimates.
+
+
+InfeRes generates five-level hierarchical products (Levels 0–4) representing key reservoir morphometric states (area, elevation, and storage). Each level reflects a progressive stage of processing:
+
+**Level 0:** Raw NDWI-derived surface area
+
+**Level 1:** Cluster-filtered area using KMeans on normalized NDWI
+
+**Level 2:** Spatially filtered area via zone-based and local window filtering
+
+**Level 3:** Temporally filtered area using statistical outlier removal
+
+**Level 4:** Smoothed and gap-filled daily time series
+
 
 Dependencies
 ----------------
