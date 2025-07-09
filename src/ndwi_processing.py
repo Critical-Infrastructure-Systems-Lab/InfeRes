@@ -271,117 +271,100 @@ def filter_ndwi_by_mask(ndwi_array, sensor_id,baselayers_dir):
         return None, None, None
     
 
-    
+  
 
-
-def zone_based_filtering(ndwi_array, zone_map, method="predefined_zones", num_clusters=2, zone_threshold=0.1):
+def cluster_filtering(ndwi_array: np.ndarray, n_clusters: int = 3) -> np.ndarray:
     """
-    Performs water area filtering using either:
-    - 'blobs': NDWI-connected components filtered by frequency clustering
-    - 'predefined_zones': Zone-based KMeans filtering + water cluster fusion
+    Extracts the strongest water cluster from a preprocessed NDWI image using KMeans clustering,
+    and masks it using the valid reservoir zone map.
 
     Parameters:
-        ndwi_array (np.ndarray): NDWI image (preprocessed)
-        zone_map (np.ndarray): Frequency image (0–100) or zone index image (1–50)
-        method (str): 'blobs' or 'predefined_zones'
-        num_clusters (int): KMeans cluster count (used in predefined_zones)
-        zone_threshold (float): Minimum ratio to consider zone "active" (used for quality check)
+        ndwi_array (np.ndarray): CLAHE-enhanced NDWI image.
+        zone_map (np.ndarray): Zone or frequency map (used to mask non-reservoir areas).
+        n_clusters (int): Number of clusters to use in KMeans.
 
     Returns:
-        Tuple[np.ndarray, np.ndarray]: 
-            - Refined water mask (binary)
-            - Initial water cluster mask (binary)
+        np.ndarray: Binary water mask (cluster), masked outside reservoir.
     """
-    # Zones are essentially spatial partitions or regions within a reservoir's area that help in refining water detection. 
-    # Zone 50 → areas that are always covered with water (core of the reservoir).
-    # Zone 1 → areas rarely covered with water (fringe, floodplains).
-    # A fixed rule is used: if zone ratio ≥10%, keep the zone.
+    # Flatten NDWI image for clustering
+    ndwi_flat = ndwi_array.ravel()
+    valid_mask = ~np.isnan(ndwi_flat)
+    valid_ndwi = ndwi_flat[valid_mask]
 
+    # Cluster NDWI values using KMeans
+    km = KMeans(n_clusters=n_clusters, random_state=0)
+    km.fit(valid_ndwi.reshape(-1, 1))
 
-    if method == "blobs":
-        # --- Method 1: Blob filtering (NDWI > 0, then group by frequency)
-        water_mask = (ndwi_array > 0).astype(np.uint8)
-        labeled_zones, num_zones = label(water_mask)
-        zone_ratios = []
-        valid_mask = np.zeros_like(water_mask)
+    # Predict cluster labels and reshape
+    cluster_labels = km.predict(ndwi_array.reshape(-1, 1))
+    cluster_image = cluster_labels.reshape(ndwi_array.shape)
 
-        for zone_id in range(1, num_zones + 1):
-            zone = labeled_zones == zone_id
-            ratio = np.mean(zone_map[zone])
-            zone_ratios.append(ratio)
-
-        if len(zone_ratios) >= 2:
-            kmeans = KMeans(n_clusters=num_clusters, n_init='auto', random_state=42)
-            zone_labels = kmeans.fit_predict(np.array(zone_ratios).reshape(-1, 1))
-            group_means = [np.mean([r for r, l in zip(zone_ratios, zone_labels) if l == g]) for g in range(num_clusters)]
-            water_group = int(np.argmax(group_means))
-
-            for zone_id in range(1, num_zones + 1):
-                if zone_labels[zone_id - 1] == water_group:
-                    valid_mask[labeled_zones == zone_id] = 1
-
-        return valid_mask.astype(np.uint8)
-
-    elif method == "predefined_zones":
-                
-        num_zones = 50
-        zone_map = np.ceil(zone_map / 2).astype(np.float32)
-        zone_map[np.isnan(zone_map)] = 0
-
-        # Step 1: Cluster NDWI to extract strongest water blob
-        ndwi_flat = ndwi_array.ravel()
-        # Mask NaNs for KMeans fitting
-        valid_mask = ~np.isnan(ndwi_flat)
-        valid_ndwi = ndwi_flat[valid_mask]
-        km = KMeans(n_clusters=3, random_state=0)
-        km.fit(valid_ndwi.reshape(-1, 1))
-        cluster_centers = km.cluster_centers_
-        cluster_labels = km.predict(ndwi_array.reshape(-1, 1))
-        cluster_image = cluster_labels.reshape(ndwi_array.shape)
-        water_cluster_label = np.argmax(np.sum(cluster_centers, axis=1))
-        water_cluster = (cluster_image == water_cluster_label).astype(np.float32)
-        
-        # Step 2: Compute water pixel ratios for each zone
-        pixels_per_zone = np.array([np.count_nonzero(zone_map == i + 1) for i in range(num_zones)])
-        water_pixels_per_zone = np.array([
-            np.count_nonzero((zone_map == i + 1) & (water_cluster == 1)) for i in range(num_zones)
-        ])
-        water_ratio_per_zone = water_pixels_per_zone / (pixels_per_zone + 1e-20)
-
-        # Step 3: Quality assessment
-        num_zones_meeting_threshold = np.sum(water_ratio_per_zone >= zone_threshold)
-        zone_quality_flag = int(num_zones_meeting_threshold >= 20)
-        
-        # Step 4: KMeans clustering of zone water ratios
-        normalized_ratios = water_ratio_per_zone * 100 / (np.max(water_ratio_per_zone) + 1e-20)
-        zone_indices = np.arange(1, num_zones + 1)
-        zone_features = np.vstack((zone_indices, normalized_ratios)).T
-        kmeans = KMeans(n_clusters=2, n_init=10, random_state=0).fit(zone_features)
-        zone_labels = kmeans.labels_
-
-        # Identify the dominant water group
-        min_zone_label_0 = np.min(zone_indices[zone_labels == 0], initial=num_zones)
-        min_zone_label_1 = np.min(zone_indices[zone_labels == 1], initial=num_zones)
-        min_accepted_zone_id = max(min_zone_label_0, min_zone_label_1)
-        dominant_group_id = 0 if min_zone_label_0 == min_accepted_zone_id else 1
-
-        # Step 5: Enhance classification by adding selected zones
-        selected_zone_mask = np.copy(zone_map)
-        selected_zone_mask[selected_zone_mask < min_accepted_zone_id] = 0
-        refined_mask = water_cluster + selected_zone_mask
-        refined_mask[refined_mask > 1] = 1
-        
-        # Mask out pixels outside valid zones
-        water_cluster[zone_map == 0] = 0
-        
-        
-        
-        
-        return refined_mask.astype(np.uint8), water_cluster.astype(np.uint8),zone_quality_flag
-
+    # Extract the dominant NDWI cluster (likely water)
+    cluster_centers = km.cluster_centers_
+    dominant_cluster = np.argmax(np.sum(cluster_centers, axis=1))
+    water_cluster = (cluster_image == dominant_cluster).astype(np.float32)
     
-    else:
-        raise ValueError(f"Invalid method: {method}. Choose 'blobs' or 'predefined_zones'.")
+    return water_cluster
+
+
+
+def zone_based_filtering(water_cluster: np.ndarray, zone_map: np.ndarray, zone_threshold: float = 0.1) -> tuple[np.ndarray, int]:
+    """
+    Refines the water cluster using zone-based filtering and quality assessment.
+
+    Parameters:
+        water_cluster (np.ndarray): Binary water mask (output of cluster_filtering).
+        zone_map (np.ndarray): Frequency or zone index map (0–100 scale).
+        zone_threshold (float): Threshold ratio of water pixels to retain a zone.
+
+    Returns:
+        Tuple[np.ndarray, int]: 
+            - Refined water mask (binary)
+            - zone_quality_flag (1 if high quality, else 0)
+    """
+    num_zones = 50
+
+    # Standardize zone map to range 1–50 and replace NaNs with 0 (non-zone)
+    zone_map = np.ceil(zone_map / 2).astype(np.float32)
+    zone_map[np.isnan(zone_map)] = 0
+
+    # Step 1: Count total and water pixels per zone
+    pixels_per_zone = np.array([np.count_nonzero(zone_map == i + 1) for i in range(num_zones)])
+    water_pixels_per_zone = np.array([
+        np.count_nonzero((zone_map == i + 1) & (water_cluster == 1)) for i in range(num_zones)
+    ])
+    water_ratio_per_zone = water_pixels_per_zone / (pixels_per_zone + 1e-20)
+
+    # Step 2: Check number of zones with sufficient water to assess quality
+    num_zones_meeting_threshold = np.sum(water_ratio_per_zone >= zone_threshold)
+    zone_quality_flag = int(num_zones_meeting_threshold >= 20)
+
+    # Step 3: Normalize ratios and cluster zones using KMeans
+    normalized_ratios = water_ratio_per_zone * 100 / (np.max(water_ratio_per_zone) + 1e-20)
+    zone_indices = np.arange(1, num_zones + 1)
+    zone_features = np.vstack((zone_indices, normalized_ratios)).T
+
+    # Apply KMeans clustering to the water ratios of zones
+    kmeans = KMeans(n_clusters=2, n_init=10, random_state=0).fit(zone_features)
+    zone_labels = kmeans.labels_
+
+    # Step 4: Determine which group corresponds to real water zones
+    min_zone_label_0 = np.min(zone_indices[zone_labels == 0], initial=num_zones)
+    min_zone_label_1 = np.min(zone_indices[zone_labels == 1], initial=num_zones)
+    min_accepted_zone_id = max(min_zone_label_0, min_zone_label_1)
+
+    # Step 5: Create binary mask of selected zones (>= min accepted zone)
+    selected_zone_mask = np.copy(zone_map)
+    selected_zone_mask[selected_zone_mask < min_accepted_zone_id] = 0
+
+    # Step 6: Combine zone-based mask with water cluster
+    refined_mask = water_cluster + selected_zone_mask
+    refined_mask[refined_mask > 1] = 1  # ensure binary
+
+
+
+    return refined_mask.astype(np.uint8), zone_quality_flag
+
 
 
 

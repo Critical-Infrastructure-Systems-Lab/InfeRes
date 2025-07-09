@@ -18,6 +18,8 @@ Dependencies: numpy, pandas, scipy.interpolate
 import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
+from scipy import stats
+from statsmodels.nonparametric.smoothers_lowess import lowess
 
 
 def load_curve(csv_path):
@@ -76,3 +78,4 @@ def convert_area_to_storage(area_series, curve_csv_path):
         'water_level_m': levels,
         'storage_mcm': volumes
     })
+

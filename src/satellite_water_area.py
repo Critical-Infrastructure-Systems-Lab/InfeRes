@@ -31,7 +31,7 @@ import configparser
 import geemap
 import os
 
-from ndwi_processing import filter_ndwi_by_mask,zone_based_filtering,apply_local_filtering
+from ndwi_processing import filter_ndwi_by_mask,zone_based_filtering,apply_local_filtering,cluster_filtering
 
 # Load configuration
 config = configparser.ConfigParser()
@@ -91,17 +91,26 @@ def estimate_water_area(composite_image, region, baselayers_dir, reservoir_name=
         clahe_mask = (filtered_ndwi > 0).astype(np.uint8)
         clahe_area = np.sum(clahe_mask == 1) * PIXEL_AREA_KM2
         
+        # Step 6: Extract dominant water cluster (Level 1 product)
+        water_cluster = cluster_filtering(filtered_ndwi)
+        # Standardize zone map to range 1–50 and replace NaNs with 0 (non-zone)
+        zone_map=freq_array.copy()
+        zone_map = np.ceil(zone_map / 2).astype(np.float32)
+        zone_map[np.isnan(zone_map)] = 0
+        # Mask out non-reservoir areas
+        water_cluster_mask=water_cluster.copy()
+        water_cluster_mask[zone_map == 0] = 0
+        water_cluster_area = np.sum(water_cluster_mask == 1) * PIXEL_AREA_KM2
         
-        # Step 6: Zone-based filtering
-        zone_refined_mask,water_cluster,zone_quality_flag = zone_based_filtering(filtered_ndwi, freq_array)
-        water_cluster_area = np.sum(water_cluster == 1) * PIXEL_AREA_KM2
+        # Step 7: Refine using zone-based filtering (Level 2 product)
+        zone_refined_mask, zone_quality_flag = zone_based_filtering(water_cluster, freq_array)
         zone_filtered_area = np.sum(zone_refined_mask == 1) * PIXEL_AREA_KM2
         
-        # Step 7: Local filtering
+        # Step 8: Local filtering
         local_filtered_mask = apply_local_filtering(zone_refined_mask, freq_array)
         local_filtered_area = np.sum(local_filtered_mask == 1) * PIXEL_AREA_KM2
 
-        # Step 8: Quality check (multi-criteria)
+        # Step 9: Quality check (multi-criteria)
         quality_flag = 1  # assume valid
         
         if (
