@@ -37,6 +37,9 @@ import configparser
 import pandas as pd
 import geemap
 import calendar
+from datetime import datetime, timedelta
+
+
 
 from utils import (boundary_to_geometry,setup_reservoir_folders,load_reservoir_metadata,parse_reservoir_ids)
 from metadata_builder import generate_reservoir_metadata
@@ -45,7 +48,7 @@ from reservoir_delineation import delineate_reservoir
 from reservoir_curve import generate_curve_pre_srtm, generate_curve_post_srtm
 from satellite_composite import get_landsat_composite, get_sentinel_composite
 from satellite_water_area import estimate_water_area
-from area_to_storage import convert_area_to_storage
+from area_postprocessing import generate_inferes_products
 
 
 # %% Load config.ini
@@ -142,12 +145,12 @@ for gid in grand_ids:
     # Step 5: Estimate surface area from NDWI composites & append results to output file
     print("[Step 5] Estimating Water Surface Area...")
     # Define output CSV path early so we can append during processing
-    output_csv = os.path.join(output_res_dir, "inferes_area_storage.csv")
+    output_csv = os.path.join(output_res_dir, "inferes_area.csv")
     if os.path.exists(output_csv):
         os.remove(output_csv)
     # Initialize CSV file with header if it doesn't exist
     with open(output_csv, "w") as f:
-        f.write("sensor,date,cloud_percentage,quality_flag,raw_area,pre_filtering_area_km2,post_filtering_area_km2,water_level_m,post_filtering_storage_mcm\n")
+        f.write("sensor,date,cloud_percentage,quality_flag,raw_area,clahe_area,water_cluster_area,zone_filtered_area, local_filtered_area,pre_filtering_area_km2,post_filtering_area_km2\n")
 
     curve_path = os.path.join(output_res_dir, "reservoir_hypsometry.csv")
     count_img=0
@@ -176,26 +179,56 @@ for gid in grand_ids:
                             print("Skipping due to invalid image or too much cloud.")
                         else:
                             # Create temporary DataFrame for the current row
-                            
+                            # assign the date of the calculation to the midpoint date between start_date and end_date
+                            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+                            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+                            mid_dt = start_dt + (end_dt - start_dt) / 2 
+                            mid_date = mid_dt.strftime("%Y-%m-%d")
                             row_data = {
                                 "sensor": sensor_label,
-                                "date": f"{year}-{month:02d}-{end_day:02d}",
+                                "date": mid_date,
                                 "cloud_percentage": round(cloud_pct, 2) if cloud_pct is not None else None,
                                 "quality_flag": quality_flag,
                                 "raw_area":raw_area,
+                                "clahe_area":clahe_area,
+                                "water_cluster_area":water_cluster_area,
+                                "zone_filtered_area":zone_filtered_area,
+                                "local_filtered_area":local_filtered_area,
                                 "pre_filtering_area_km2": pre_filtering_area,
                                 "post_filtering_area_km2": post_filtering_area,
                             }
 
                             #  Convert area to storage using post-filtering area
                             area_df = pd.DataFrame([row_data])   # create dataframe from results
-                            elev_storage = convert_area_to_storage(area_df["post_filtering_area_km2"], curve_path)
-                            elev_storage.rename(columns={'storage_mcm': 'post_filtering_storage_mcm'}, inplace=True)
-                            elev_storage = elev_storage.round(2)  # apply rounding here
-                            area_df[["water_level_m", "post_filtering_storage_mcm"]] = elev_storage
                             # Append to CSV
                             area_df.to_csv(output_csv, mode="a", index=False, header=False)
                     
+    # Step 6: Postprocessing surface area 
+    print("[Step 6] Postprocessing Water Surface Area...")
+    df_area = pd.read_csv(output_csv)
+    
+    # Generate levels and updated area_df with level3 & level4 area values
+    products, updated_area_df = generate_inferes_products(
+        df_area=df_area,
+        curve_path=curve_path,
+        year_of_commission=res_year,
+        sim_start_year=start_year,
+        sim_end_year=end_year,
+        rolling_window=15
+    )
+
+    
+    # Save updated area CSV with postprocessed area columns
+    updated_area_path = os.path.join(output_res_dir, "inferes_area.csv")
+    updated_area_df.to_csv(updated_area_path, index=False)
+
+    # Save full product levels
+    for i in range(5):
+        product_df = products[f"level{i}"]
+        product_path = os.path.join(output_res_dir, f"inferes_level{i}_product.csv")
+        product_df.to_csv(product_path, index=False)
+    
+    
     
     print(f"InfeRes results saved: {os.path.basename(output_csv)}")
     print(f"InfeRes completed for: {res_name}")
