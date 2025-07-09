@@ -52,6 +52,12 @@ References
 Acknowledgement 
 ---------------------
 
+The development of InfeRes is supported by:
+
+- The National Science Foundation, Award no. 2423091.
+
+- The Singapore Ministry of Education (MoE), as part of its Academic Research Fund Tier 2, project no. MOE-000379-00/MOE-000379-01 and award no. MOE-T2EP50122-0004.
+
 We have acquired the reference GRAND_Curves (reservoir's reconstructed bathymetry) form `Hao et al., (2024) <https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023WR035781>`_, which is available for the list of reservoirs in the Global Reservoir and Dam (GRanD) Database (`Lehner et al., 2011 <https://esajournals.onlinelibrary.wiley.com/doi/10.1890/100125>`_).  
 
 - Hao, Z., Chen, F., Jia, X., Cai, X., Yang, C., Du, Y., & Ling, F. (2024). GRDL: A New Global Reservoir Area‐Storage‐Depth Data Set Derived Through Deep Learning‐Based Bathymetry Reconstruction. Water Resources Research, 60(1), e2023WR035781.
