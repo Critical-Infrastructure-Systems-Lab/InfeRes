@@ -174,7 +174,7 @@ def generate_reservoir_metadata(
         with open(output_path, mode="w", newline="") as csvfile:
             fieldnames = [
                 "GRAND_ID", "Name", "Year", "GRAND_Capacity",
-                "MAX_WL", "Bottom_Elev", "Shape_Factor",
+                "MAX_WL","MAX_AREA", "Bottom_Elev", "Shape_Factor",
                 "Point", "Boundary"
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -185,6 +185,7 @@ def generate_reservoir_metadata(
                 "Year": year,
                 "GRAND_Capacity": round(grand_capacity, 2),
                 "MAX_WL": round(max_wl, 2),
+                "MAX_AREA":round(area_skm,2),
                 "Bottom_Elev": round(bottom_elevation, 2),
                 "Shape_Factor": K,
                 "Point": point_str,
