@@ -97,6 +97,7 @@ for gid in grand_ids:
     grand_id = res.GRAND_ID
     grand_capacity = res.GRAND_Capacity
     max_water_level = round(res.MAX_WL)
+    max_water_area = round(res.MAX_AREA)
     point = [float(x) for x in res.Point.split(",")]
     boundary = [float(x) for x in res.Boundary.split(",")]
     region = boundary_to_geometry(boundary)
@@ -206,6 +207,7 @@ for gid in grand_ids:
     # Step 6: Postprocessing surface area 
     print("[Step 6] Postprocessing Water Surface Area...")
     df_area = pd.read_csv(output_csv)
+    reservoir_area_km2 =max_water_area
     
     # Generate levels and updated area_df with level3 & level4 area values
     products, updated_area_df = generate_inferes_products(
@@ -214,7 +216,9 @@ for gid in grand_ids:
         year_of_commission=res_year,
         sim_start_year=start_year,
         sim_end_year=end_year,
-        rolling_window=15
+        res_max_area_km2=reservoir_area_km2,
+        apply_bias_correction=True,
+        rolling_window=15,
     )
 
     
