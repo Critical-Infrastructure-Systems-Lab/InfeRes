@@ -194,13 +194,41 @@ def smooth_time_series(
 
     return date_df[['date', output_column]]
 
+def area_bias_correction(df: pd.DataFrame, res_max_area_km2: float, input_col: str = "level3_area_km2") -> pd.DataFrame:
+    """
+    Applies bias correction to estimated reservoir area time series using a known maximum area.
 
+    Parameters:
+    - df: DataFrame with 'date' and area column (e.g., 'level3_area_km2').
+    - res_max_area_km2: Known maximum water surface area of the reservoir (from field data or literature).
+    - input_col: Column name containing the estimated area values to be corrected.
+
+    Returns:
+    - DataFrame with a new column '<input_col>_bias_corrected' containing corrected area values.
+    """
+    df = df.copy()
+
+    # Safety check
+    if input_col not in df.columns:
+        raise ValueError(f"Column '{input_col}' not found in DataFrame.")
+
+    estimated_max_area = df[input_col].max()
+    if estimated_max_area == 0 or np.isnan(estimated_max_area):
+        raise ValueError("Estimated maximum area is zero or NaN. Bias correction cannot be applied.")
+
+    correction_factor = res_max_area_km2 / estimated_max_area
+    df[input_col] = df[input_col] * correction_factor
+    
+    return df
+   
 def generate_inferes_products(
     df_area: pd.DataFrame,
     curve_path: str,
     year_of_commission: int,
     sim_start_year: int,
     sim_end_year: int,
+    res_max_area_km2: float,
+    apply_bias_correction: bool = True,
     rolling_window: int = 15
 ) -> tuple[dict, pd.DataFrame]:
     """
@@ -223,6 +251,15 @@ def generate_inferes_products(
     Level 4 — Smoothed Area:
         Daily interpolated and smoothed area time series using a rolling mean, producing a consistent and gap-filled
         product suitable for long-term analysis and volume estimation.
+    
+    res_max_area_km2 : float
+       Known maximum surface area (in km²) of the reservoir, used to correct area bias via scaling.
+
+    apply_bias_correction : bool, optional (default=True)
+        Whether to apply bias correction using the known maximum surface area.
+
+    rolling_window : int, optional (default=15)
+        Rolling window size (in days) used for smoothing the time series in Level 4.
 
 
     Returns:
@@ -277,6 +314,10 @@ def generate_inferes_products(
 
 
     # LEVEL 4: smoothing area, elevation, and storage independently
+    # Apply bias correction
+    if apply_bias_correction:
+        df3 = area_bias_correction(df3, res_max_area_km2, input_col="level3_area_km2")
+        
     level4_dfs = []
     
     for var in ['area', 'elevation', 'storage']:
