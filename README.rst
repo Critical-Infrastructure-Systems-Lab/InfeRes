@@ -51,7 +51,7 @@ InfeRes generates five-level hierarchical products (Levels 0–4) representing k
 Dependencies
 ----------------
 
- - Python version-3.8 and above (we used Anaconda3, which is an open-source distribution of the Python)
+ - Python version-3.1 and above (we used Anaconda3, which is an open-source distribution of the Python)
  - Python standard library (os, numpy, pandas, matplotlib, csv)
  - Python advanced library (ee, osgeo, rasterio, sklearn.cluster, scipy.ndimage, skimage.morphology)
 
