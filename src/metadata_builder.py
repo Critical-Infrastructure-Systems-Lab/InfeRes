@@ -121,7 +121,7 @@ def generate_reservoir_metadata(
         res_poly = reservoirs[reservoirs['GRAND_ID'] == grand_id]
 
         if res_poly.empty:
-            print(f"❌ Reservoir polygon not found for GRAND_ID {grand_id}")
+            print(f" Reservoir polygon not found for GRAND_ID {grand_id}")
             return
 
         res_row = res_poly.iloc[0]
@@ -212,5 +212,5 @@ def generate_reservoir_metadata(
             plt.close()
 
     except Exception as e:
-        print(f"❌ Error processing GRAND_ID {grand_id}: {e}")
+        print(f"Error processing GRAND_ID {grand_id}: {e}")
 
