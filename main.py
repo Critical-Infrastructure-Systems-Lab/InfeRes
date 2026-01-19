@@ -237,6 +237,6 @@ for gid in grand_ids:
     print(f"InfeRes results saved: {os.path.basename(output_csv)}")
     print(f"InfeRes completed for: {res_name}")
 
-print("\n ✅ InfeRes completed for all reservoirs.")
+print("\n InfeRes completed for all reservoirs.")
     
   
