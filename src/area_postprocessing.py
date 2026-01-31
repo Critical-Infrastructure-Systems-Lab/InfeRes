@@ -194,6 +194,7 @@ def smooth_time_series(
 
     return date_df[['date', output_column]]
 
+
 def area_bias_correction(df: pd.DataFrame, res_max_area_km2: float, input_col: str = "level3_area_km2") -> pd.DataFrame:
     """
     Applies bias correction to estimated reservoir area time series using a known maximum area.
@@ -220,7 +221,8 @@ def area_bias_correction(df: pd.DataFrame, res_max_area_km2: float, input_col: s
     df[input_col] = df[input_col] * correction_factor
     
     return df
-   
+
+
 def generate_inferes_products(
     df_area: pd.DataFrame,
     curve_path: str,
@@ -231,6 +233,7 @@ def generate_inferes_products(
     apply_bias_correction: bool = True,
     rolling_window: int = 15
 ) -> tuple[dict, pd.DataFrame]:
+    
     """
     Processes raw InfeRes area time series through multiple stages of filtering and smoothing:
     
@@ -251,9 +254,9 @@ def generate_inferes_products(
     Level 4 — Smoothed Area:
         Daily interpolated and smoothed area time series using a rolling mean, producing a consistent and gap-filled
         product suitable for long-term analysis and volume estimation.
-    
+        
     res_max_area_km2 : float
-       Known maximum surface area (in km²) of the reservoir, used to correct area bias via scaling.
+    Known maximum surface area (in km²) of the reservoir, used to correct area bias via scaling.
 
     apply_bias_correction : bool, optional (default=True)
         Whether to apply bias correction using the known maximum surface area.
@@ -314,10 +317,13 @@ def generate_inferes_products(
 
 
     # LEVEL 4: smoothing area, elevation, and storage independently
+    
     # Apply bias correction
     if apply_bias_correction:
         df3 = area_bias_correction(df3, res_max_area_km2, input_col="level3_area_km2")
         
+    
+
     level4_dfs = []
     
     for var in ['area', 'elevation', 'storage']:

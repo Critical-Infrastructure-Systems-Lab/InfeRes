@@ -190,7 +190,7 @@ def otsu_water_mask(ndwi: np.ndarray) -> np.ndarray:
     valid_pixels = ndwi[~np.isnan(ndwi)]  # remove NaNs if any
     thresh = threshold_otsu(valid_pixels)
     return ndwi > thresh
-    
+
 def apply_clahe_rescaling(ndwi, sensor_id):
     """
     Applies CLAHE (Contrast Limited Adaptive Histogram Equalization) normalization and rescaling to NDWI data.
@@ -204,8 +204,8 @@ def apply_clahe_rescaling(ndwi, sensor_id):
     """
     water_mask = ndwi > -0.1
     ndwi_clahe_input = np.where(water_mask, ndwi, -1.0)  # set land pixels to -1 (or any fixed low NDWI)
-    
-    ndwi_norm = ((ndwi + 1) * 127.5).astype(np.uint8)
+
+    ndwi_norm = ((ndwi_clahe_input + 1) * 127.5).astype(np.uint8)
     # ndwi_norm = ((ndwi + 1) * 10.5).astype(np.uint8)
     ndwi_norm[ndwi_norm<=0]=0
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))   # operates on 8x8 pixel tiles

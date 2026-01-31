@@ -93,6 +93,7 @@ def estimate_water_area(composite_image, region, baselayers_dir, reservoir_name=
         
         # Step 6: Extract dominant water cluster (Level 1 product)
         water_cluster = cluster_filtering(filtered_ndwi)
+        
         # Standardize zone map to range 1–50 and replace NaNs with 0 (non-zone)
         zone_map=freq_array.copy()
         zone_map = np.ceil(zone_map / 2).astype(np.float32)
