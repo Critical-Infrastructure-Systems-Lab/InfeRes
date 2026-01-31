@@ -35,6 +35,8 @@ sys.path.append(src_path)
 import ee
 import configparser
 import pandas as pd
+import numpy as np
+from osgeo import gdal_array
 import geemap
 import calendar
 from datetime import datetime, timedelta
@@ -116,6 +118,8 @@ for gid in grand_ids:
     # Step 3: Reservoir isolation
     print("[Step 3] Delineating reservoir boundaries...")
     delineate_reservoir(res_name, max_water_level, point, boundary, baselayers_dir,plot=False)
+    
+    
 
     # Step 4: Generate Reservoir Hypsometric Curve (Elevation–Area–Storage Relationship)
     print("[Step 4] Generating Reservoir Hypsometric Curve (Elevation–Area–Storage Relationship) ...")
@@ -207,6 +211,10 @@ for gid in grand_ids:
     # Step 6: Postprocessing surface area 
     print("[Step 6] Postprocessing Water Surface Area...")
     df_area = pd.read_csv(output_csv)
+    # estimate maximum water area extent for bias correction
+    # mask_path = os.path.join(baselayers_dir, "reservoir_mask.tif")
+    # mask = gdal_array.LoadFile(mask_path).astype(np.float32)
+    # reservoir_area_km2 = round(np.count_nonzero(mask == 1) * 0.0009, 2)
     reservoir_area_km2 =max_water_area
     
     # Generate levels and updated area_df with level3 & level4 area values
@@ -237,6 +245,6 @@ for gid in grand_ids:
     print(f"InfeRes results saved: {os.path.basename(output_csv)}")
     print(f"InfeRes completed for: {res_name}")
 
-print("\n InfeRes completed for all reservoirs.")
+print("\n ✅ InfeRes completed for all reservoirs.")
     
   
